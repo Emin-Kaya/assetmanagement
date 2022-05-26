@@ -14,6 +14,7 @@ import java.io.IOException;
 @Component
 public class UnauthorizedHandler implements AuthenticationEntryPoint {
     private static final Logger logger = LoggerFactory.getLogger(UnauthorizedHandler.class);
+
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {

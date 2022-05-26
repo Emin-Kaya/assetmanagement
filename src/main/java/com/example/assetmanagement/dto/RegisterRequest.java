@@ -24,10 +24,4 @@ public class RegisterRequest {
 
     @Min(value = 8, message = "Password must be at least 8 characters")
     private String password;
-
-    /*@NotBlank(message = "First name is mandatory")
-    private String firstName;
-
-    @NotBlank(message = "Last name is mandatory")
-    private String lastName;*/
 }

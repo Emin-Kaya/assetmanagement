@@ -21,7 +21,6 @@ public class VerificationTokenService {
 
     private Long verificationTokenExpiration = 45000L;
 
-
     public String generateVerificationToken(UserAccount userAccount) {
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = new VerificationToken();

@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 public class AssetManagementApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(AssetManagementApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(AssetManagementApplication.class, args);
+    }
 
 }

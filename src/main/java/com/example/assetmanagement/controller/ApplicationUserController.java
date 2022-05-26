@@ -2,7 +2,6 @@ package com.example.assetmanagement.controller;
 
 import com.example.assetmanagement.dto.ApplicationUserRequest;
 import com.example.assetmanagement.dto.ApplicationUserResponse;
-import com.example.assetmanagement.entity.ApplicationUser;
 import com.example.assetmanagement.service.ApplicationUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +17,7 @@ public class ApplicationUserController {
     private final ApplicationUserService applicationUserService;
 
     @PostMapping
-    public ResponseEntity<String> createApplicationUser(@RequestBody ApplicationUserRequest applicationUserRequest){
+    public ResponseEntity<String> createApplicationUser(@RequestBody ApplicationUserRequest applicationUserRequest) {
         applicationUserService.saveUserAccount(applicationUserRequest);
         return status(HttpStatus.CREATED).body("User data saved.");
     }
