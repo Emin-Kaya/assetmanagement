@@ -1,0 +1,55 @@
+plugins {
+	id 'org.springframework.boot' version '2.6.4'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id("org.liquibase.gradle") version "2.1.1"
+}
+
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+//todo alles ordnen
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
+	implementation (group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1')
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+	implementation 'org.springframework.boot:spring-boot-starter-mail:2.6.7'
+
+	// https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf
+	implementation 'org.thymeleaf:thymeleaf:3.1.0.M1'
+
+	implementation("org.liquibase:liquibase-core:4.8.0")
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'org.postgresql:postgresql'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	implementation 'org.mapstruct:mapstruct:1.5.0.RC1'
+	// https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.0.RC1'
+
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+sourceSets {
+	main.java.srcDirs += "build/generated/source/apt/main"
+}
