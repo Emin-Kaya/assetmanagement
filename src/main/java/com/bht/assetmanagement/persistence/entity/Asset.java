@@ -25,27 +25,10 @@ public class Asset {
     private String name;
 
     @Column
-    private byte[] image;
-
-    @Column
     private String category;
 
-    @Column
-    private String price;
-
-    @Column
-    private String link;
-
-    @ManyToOne
-    @JoinColumn(name = "address_id")
-    private Address deliveryAddress;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private ApplicationUser assetOwner;
-
-    @ManyToOne
+   /* @OneToOne
     @JoinColumn(name = "inquiry_id")
-    private AssetInquiry assetInquiry;
+    private AssetInquiry assetInquiry;*/
 
 }

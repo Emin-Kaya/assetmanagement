@@ -28,10 +28,10 @@ public class ApplicationUser {
     @Column(nullable = false)
     private String lastName;
 
-    @OneToMany(mappedBy = "assetOwner")
-    private Set<Asset> assets;
+    /*@OneToMany(mappedBy = "owner")
+    private Set<AssetInquiry> assetInquiries;*/
 
     @OneToOne
-    @JoinColumn(name = "ua_id")
+    @JoinColumn(name = "account_id")
     private UserAccount userAccount;
 }

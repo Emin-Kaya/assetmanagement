@@ -30,8 +30,23 @@ public class AssetInquiry {
     private String note;
 
     @Column
+    private Double price;
+
+    @Column
+    private String link;
+
+    @Column
     private boolean enable;
 
-    @OneToMany(mappedBy = "assetInquiry")
-    private Set<Asset> assets;
+    @OneToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
+
+    @ManyToOne
+    @JoinColumn(name = "app_user_id")
+    private ApplicationUser owner;
+
+    @OneToOne
+    @JoinColumn(name = "asset_id")
+    private Asset assets;
 }
