@@ -19,8 +19,7 @@ public class AddressService {
     }
 
     public Address getAddress(AddressDto addressDto) {
-        Address address = addressRepository.findAddressByStreetNameAndStreetNumberAndPostalCode(addressDto.getStreetName(), addressDto.getStreetNumber(), addressDto.getPostalCode()).orElse(createAddress(addressDto));
-        return address;
+        return addressRepository.findAddressByStreetNameAndStreetNumberAndPostalCode(addressDto.getStreetName(), addressDto.getStreetNumber(), addressDto.getPostalCode()).orElseGet(() -> createAddress(addressDto));
     }
 
 }

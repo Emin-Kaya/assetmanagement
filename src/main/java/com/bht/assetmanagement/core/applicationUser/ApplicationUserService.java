@@ -16,10 +16,14 @@ public class ApplicationUserService {
     private final UserAccountService userAccountService;
 
 
-    public void saveUserAccount(ApplicationUserRequest applicationUserRequest) {
+    public void createApplicationUser(ApplicationUserRequest applicationUserRequest) {
         ApplicationUser applicationUser = ApplicationUserMapper.INSTANCE.mapRequestToApplicationUser(applicationUserRequest);
         UserAccount userAccount = userAccountService.getCurrenUser();
         applicationUser.setUserAccount(userAccount);
+        saveApplicationUser(applicationUser);
+    }
+
+    public void saveApplicationUser(ApplicationUser applicationUser) {
         applicationUserRepository.save(applicationUser);
     }
 

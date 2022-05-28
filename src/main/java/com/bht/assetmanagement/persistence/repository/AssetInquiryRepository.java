@@ -9,9 +9,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @Repository
 public interface AssetInquiryRepository extends JpaRepository<AssetInquiry, String> {
     Set<AssetInquiry> findAllByOwner(ApplicationUser owner);
-
+    AssetInquiry findByAssetInquiryId(UUID assetInquiryID);
 }
