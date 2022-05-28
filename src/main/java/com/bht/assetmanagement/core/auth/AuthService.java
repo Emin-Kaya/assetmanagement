@@ -1,16 +1,16 @@
 package com.bht.assetmanagement.core.auth;
 
 import com.bht.assetmanagement.config.security.JwtUtils;
+import com.bht.assetmanagement.core.email.EmailService;
+import com.bht.assetmanagement.core.email.VerificationTokenService;
+import com.bht.assetmanagement.core.refreshToken.RefreshTokenService;
 import com.bht.assetmanagement.core.userAccount.UserAccountMapper;
+import com.bht.assetmanagement.core.userAccount.UserAccountService;
 import com.bht.assetmanagement.persistence.dto.*;
 import com.bht.assetmanagement.persistence.entity.Role;
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.entity.VerificationToken;
 import com.bht.assetmanagement.persistence.repository.UserAccountRepository;
-import com.bht.assetmanagement.core.email.EmailService;
-import com.bht.assetmanagement.core.refreshToken.RefreshTokenService;
-import com.bht.assetmanagement.core.userAccount.UserAccountService;
-import com.bht.assetmanagement.core.email.VerificationTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,7 +36,7 @@ public class AuthService {
     private final Clock clock;
     private final EmailService emailService;
 
-    public void signUp(RegisterRequest registerRequest) {
+    public void signUp(RegisterRequest registerRequest, Role role) {
         if (userAccountService.existsUserAccount(registerRequest.getUsername())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "This user account exists already.");
         }
@@ -44,7 +44,7 @@ public class AuthService {
         registerRequest.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         UserAccount userAccount = UserAccountMapper.INSTANCE.mapRequestToUserAccount(registerRequest);
 
-        userAccount.setRole(Role.EMPLOYEE);
+        userAccount.setRole(role);
         userAccount.setEnabled(false);
         userAccountRepository.save(userAccount);
 

@@ -1,12 +1,13 @@
 package com.bht.assetmanagement.core.auth;
 
-import com.bht.assetmanagement.persistence.dto.*;
+import com.bht.assetmanagement.persistence.dto.AuthenticationResponse;
+import com.bht.assetmanagement.persistence.dto.LoginRequest;
+import com.bht.assetmanagement.persistence.dto.PasswordChangeRequest;
+import com.bht.assetmanagement.persistence.dto.RefreshTokenRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 import static org.springframework.http.ResponseEntity.status;
 
@@ -17,11 +18,11 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/signup")
+    /*@PostMapping("/signup")
     public ResponseEntity<String> signUp(@Valid @RequestBody RegisterRequest loginRequest) {
-        authService.signUp(loginRequest);
+        authService.signUp(loginRequest, Role.EMPLOYEE);
         return status(HttpStatus.CREATED).body("Registration succesful.");
-    }
+    }*/
 
     @GetMapping("/activate/account/{token}")
     public ResponseEntity<String> activateAccount(@PathVariable String token) {
