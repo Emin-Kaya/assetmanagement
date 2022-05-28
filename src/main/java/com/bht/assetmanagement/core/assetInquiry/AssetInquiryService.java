@@ -4,17 +4,13 @@ import com.bht.assetmanagement.core.address.AddressService;
 import com.bht.assetmanagement.core.applicationUser.ApplicationUserService;
 import com.bht.assetmanagement.core.asset.AssetService;
 import com.bht.assetmanagement.persistence.dto.AssetInquiryDto;
-import com.bht.assetmanagement.persistence.entity.Address;
-import com.bht.assetmanagement.persistence.entity.ApplicationUser;
-import com.bht.assetmanagement.persistence.entity.Asset;
-import com.bht.assetmanagement.persistence.entity.AssetInquiry;
+import com.bht.assetmanagement.persistence.entity.*;
 import com.bht.assetmanagement.persistence.repository.AssetInquiryRepository;
 import com.bht.assetmanagement.shared.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,12 +27,12 @@ public class AssetInquiryService {
         Address address = addressService.createAddress(assetInquiryDto.getAddressDto());
         Asset asset = assetService.createAsset(assetInquiryDto.getAssetDto());
 
-        assetInquiry.setOwner(applicationUser);
-        assetInquiry.setAsset(asset);
-        assetInquiry.setAddress(address);
         assetInquiry.setEntryDate(dateUtils.createLocalDate());
+        assetInquiry.setStatus(Status.NOT_DONE);
+        assetInquiry.setOwner(applicationUser);
+        assetInquiry.setAddress(address);
+        assetInquiry.setAsset(asset);
 
         assetInquiryRepository.save(assetInquiry);
-
     }
 }

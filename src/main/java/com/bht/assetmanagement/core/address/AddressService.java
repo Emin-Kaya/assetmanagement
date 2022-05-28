@@ -6,6 +6,8 @@ import com.bht.assetmanagement.persistence.repository.AddressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AddressService {
@@ -15,4 +17,10 @@ public class AddressService {
         Address address = AddressMapper.INSTANCE.mapDtoToAddress(addressDto);
         return addressRepository.save(address);
     }
+
+    public Address getAddress(AddressDto addressDto) {
+        Address address = addressRepository.findAddressByStreetNameAndStreetNumberAndPostalCode(addressDto.getStreetName(), addressDto.getStreetNumber(), addressDto.getPostalCode()).orElse(createAddress(addressDto));
+        return address;
+    }
+
 }

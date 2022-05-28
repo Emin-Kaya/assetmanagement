@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
-    <changeSet id="1653675294719-1" author="eminkaya (generated)">
+    <changeSet id="1653764888575-1" author="eminkaya (generated)">
         <createTable tableName="address">
             <column name="address_id" type="UUID">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_address"/>
@@ -27,7 +27,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1653675294719-2" author="eminkaya (generated)">
+    <changeSet id="1653764888575-2" author="eminkaya (generated)">
         <createTable tableName="application_user">
             <column name="user_id" type="UUID">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_application_user"/>
@@ -41,7 +41,17 @@
             <column name="account_id" type="UUID"/>
         </createTable>
     </changeSet>
-    <changeSet id="1653675294719-3" author="eminkaya (generated)">
+    <changeSet id="1653764888575-3" author="eminkaya (generated)">
+        <createTable tableName="application_user_assets">
+            <column name="application_user_user_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_application_user_assets"/>
+            </column>
+            <column name="assets_asset_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_application_user_assets"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1653764888575-4" author="eminkaya (generated)">
         <createTable tableName="asset">
             <column name="asset_id" type="UUID">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_asset"/>
@@ -50,9 +60,9 @@
             <column name="category" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1653675294719-4" author="eminkaya (generated)">
+    <changeSet id="1653764888575-5" author="eminkaya (generated)">
         <createTable tableName="asset_inquiry">
-            <column name="asset_request_id" type="UUID">
+            <column name="asset_inquiry_id" type="UUID">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_asset_inquiry"/>
             </column>
             <column name="entry_date" type="VARCHAR(255)"/>
@@ -60,12 +70,15 @@
             <column name="price" type="DOUBLE"/>
             <column name="link" type="VARCHAR(255)"/>
             <column name="enable" type="BOOLEAN"/>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="application_user_id" type="UUID"/>
             <column name="address_id" type="UUID"/>
-            <column name="app_user_id" type="UUID"/>
             <column name="asset_id" type="UUID"/>
         </createTable>
     </changeSet>
-    <changeSet id="1653675294719-5" author="eminkaya (generated)">
+    <changeSet id="1653764888575-6" author="eminkaya (generated)">
         <createTable tableName="refresh_token">
             <column name="id" type="UUID">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_refresh_token"/>
@@ -75,7 +88,7 @@
             <column name="created_at" type="DATETIME"/>
         </createTable>
     </changeSet>
-    <changeSet id="1653675294719-6" author="eminkaya (generated)">
+    <changeSet id="1653764888575-7" author="eminkaya (generated)">
         <createTable tableName="user_account">
             <column name="user_account_id" type="UUID">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_useraccount"/>
@@ -95,7 +108,7 @@
             <column name="enabled" type="BOOLEAN"/>
         </createTable>
     </changeSet>
-    <changeSet id="1653675294719-7" author="eminkaya (generated)">
+    <changeSet id="1653764888575-8" author="eminkaya (generated)">
         <createTable tableName="verification_token">
             <column name="verification_token_id" type="UUID">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_verificationtoken"/>
@@ -105,40 +118,57 @@
             <column name="expiry_date" type="DATETIME"/>
         </createTable>
     </changeSet>
-    <changeSet id="1653675294719-8" author="eminkaya (generated)">
+    <changeSet id="1653764888575-9" author="eminkaya (generated)">
         <addUniqueConstraint columnNames="street_name, street_number, postal_code"
                              constraintName="uc_a5d801096fd411de72a07bc92" tableName="address"/>
     </changeSet>
-    <changeSet id="1653675294719-9" author="eminkaya (generated)">
+    <changeSet id="1653764888575-10" author="eminkaya (generated)">
+        <addUniqueConstraint columnNames="assets_asset_id" constraintName="uc_application_user_assets_assets_assetid"
+                             tableName="application_user_assets"/>
+    </changeSet>
+    <changeSet id="1653764888575-11" author="eminkaya (generated)">
+        <addUniqueConstraint columnNames="name" constraintName="uc_asset_name" tableName="asset"/>
+    </changeSet>
+    <changeSet id="1653764888575-12" author="eminkaya (generated)">
         <addUniqueConstraint columnNames="email" constraintName="uc_useraccount_email" tableName="user_account"/>
     </changeSet>
-    <changeSet id="1653675294719-10" author="eminkaya (generated)">
+    <changeSet id="1653764888575-13" author="eminkaya (generated)">
         <addUniqueConstraint columnNames="username" constraintName="uc_useraccount_username" tableName="user_account"/>
     </changeSet>
-    <changeSet id="1653675294719-11" author="eminkaya (generated)">
+    <changeSet id="1653764888575-14" author="eminkaya (generated)">
         <addForeignKeyConstraint baseColumnNames="account_id" baseTableName="application_user"
                                  constraintName="FK_APPLICATION_USER_ON_ACCOUNT" referencedColumnNames="user_account_id"
                                  referencedTableName="user_account"/>
     </changeSet>
-    <changeSet id="1653675294719-12" author="eminkaya (generated)">
+    <changeSet id="1653764888575-15" author="eminkaya (generated)">
         <addForeignKeyConstraint baseColumnNames="address_id" baseTableName="asset_inquiry"
                                  constraintName="FK_ASSET_INQUIRY_ON_ADDRESS" referencedColumnNames="address_id"
                                  referencedTableName="address"/>
     </changeSet>
-    <changeSet id="1653675294719-13" author="eminkaya (generated)">
-        <addForeignKeyConstraint baseColumnNames="app_user_id" baseTableName="asset_inquiry"
-                                 constraintName="FK_ASSET_INQUIRY_ON_APP_USER" referencedColumnNames="user_id"
+    <changeSet id="1653764888575-16" author="eminkaya (generated)">
+        <addForeignKeyConstraint baseColumnNames="application_user_id" baseTableName="asset_inquiry"
+                                 constraintName="FK_ASSET_INQUIRY_ON_APPLICATION_USER" referencedColumnNames="user_id"
                                  referencedTableName="application_user"/>
     </changeSet>
-    <changeSet id="1653675294719-14" author="eminkaya (generated)">
+    <changeSet id="1653764888575-17" author="eminkaya (generated)">
         <addForeignKeyConstraint baseColumnNames="asset_id" baseTableName="asset_inquiry"
                                  constraintName="FK_ASSET_INQUIRY_ON_ASSET" referencedColumnNames="asset_id"
                                  referencedTableName="asset"/>
     </changeSet>
-    <changeSet id="1653675294719-15" author="eminkaya (generated)">
+    <changeSet id="1653764888575-18" author="eminkaya (generated)">
         <addForeignKeyConstraint baseColumnNames="uid" baseTableName="verification_token"
                                  constraintName="FK_VERIFICATIONTOKEN_ON_UID" referencedColumnNames="user_account_id"
                                  referencedTableName="user_account"/>
+    </changeSet>
+    <changeSet id="1653764888575-19" author="eminkaya (generated)">
+        <addForeignKeyConstraint baseColumnNames="application_user_user_id" baseTableName="application_user_assets"
+                                 constraintName="fk_appuseass_on_application_user" referencedColumnNames="user_id"
+                                 referencedTableName="application_user"/>
+    </changeSet>
+    <changeSet id="1653764888575-20" author="eminkaya (generated)">
+        <addForeignKeyConstraint baseColumnNames="assets_asset_id" baseTableName="application_user_assets"
+                                 constraintName="fk_appuseass_on_asset" referencedColumnNames="asset_id"
+                                 referencedTableName="asset"/>
     </changeSet>
 
 </databaseChangeLog>

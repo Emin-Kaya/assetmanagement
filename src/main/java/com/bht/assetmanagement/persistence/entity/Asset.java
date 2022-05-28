@@ -21,14 +21,9 @@ public class Asset {
     @GeneratedValue(generator = "UUID")
     private UUID assetId;
 
-    @Column
+    @Column(unique = true)
     private String name;
 
     @Column
     private String category;
-
-   /* @OneToOne
-    @JoinColumn(name = "inquiry_id")
-    private AssetInquiry assetInquiry;*/
-
 }

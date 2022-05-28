@@ -28,10 +28,13 @@ public class ApplicationUser {
     @Column(nullable = false)
     private String lastName;
 
-    /*@OneToMany(mappedBy = "owner")
-    private Set<AssetInquiry> assetInquiries;*/
-
     @OneToOne
     @JoinColumn(name = "account_id")
     private UserAccount userAccount;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.ALL)
+    private Set<AssetInquiry> assetInquiries;
+
+    @OneToMany
+    private Set<Asset> assets;
 }

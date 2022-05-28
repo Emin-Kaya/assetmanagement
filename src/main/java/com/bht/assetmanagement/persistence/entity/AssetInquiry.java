@@ -20,7 +20,7 @@ public class AssetInquiry {
     @Column(nullable = false, updatable = false)
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(generator = "UUID")
-    private UUID assetRequestId;
+    private UUID assetInquiryId;
 
     @Column
     private String entryDate;
@@ -37,13 +37,17 @@ public class AssetInquiry {
     @Column
     private boolean enable;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
+
+    @ManyToOne
+    @JoinColumn(name = "application_user_id")
+    private ApplicationUser owner;
+
     @OneToOne
     @JoinColumn(name = "address_id")
     private Address address;
-
-    @ManyToOne
-    @JoinColumn(name = "app_user_id")
-    private ApplicationUser owner;
 
     @OneToOne
     @JoinColumn(name = "asset_id")
