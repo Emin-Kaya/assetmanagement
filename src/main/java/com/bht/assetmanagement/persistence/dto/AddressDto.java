@@ -9,7 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AssetDto {
-    private String name;
-    private String category;
+public class AddressDto {
+    private String streetName;
+    private String streetNumber;
+    private String postalCode;
+    private String city;
+    private String country;
 }

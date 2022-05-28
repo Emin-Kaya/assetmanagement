@@ -18,7 +18,7 @@ public class ApplicationUserController {
     @PostMapping
     public ResponseEntity<String> createApplicationUser(@RequestBody ApplicationUserRequest applicationUserRequest) {
         applicationUserService.saveUserAccount(applicationUserRequest);
-        return status(HttpStatus.CREATED).body("User data saved.");
+        return status(HttpStatus.CREATED).body("Application user data saved.");
     }
 
     @GetMapping

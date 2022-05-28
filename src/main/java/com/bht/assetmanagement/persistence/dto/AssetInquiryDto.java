@@ -9,7 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AssetDto {
-    private String name;
-    private String category;
+public class AssetInquiryDto {
+    private String note;
+    private Double price;
+    private String link;
+    private AddressDto addressDto;
+    private AssetDto assetDto;
 }

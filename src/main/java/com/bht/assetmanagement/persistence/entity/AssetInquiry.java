@@ -7,7 +7,6 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -24,7 +23,7 @@ public class AssetInquiry {
     private UUID assetRequestId;
 
     @Column
-    private LocalDate entryDate;
+    private String entryDate;
 
     @Column
     private String note;
@@ -48,5 +47,5 @@ public class AssetInquiry {
 
     @OneToOne
     @JoinColumn(name = "asset_id")
-    private Asset assets;
+    private Asset asset;
 }

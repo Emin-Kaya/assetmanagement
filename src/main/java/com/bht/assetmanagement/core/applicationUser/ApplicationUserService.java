@@ -23,9 +23,14 @@ public class ApplicationUserService {
         applicationUserRepository.save(applicationUser);
     }
 
-    public ApplicationUserResponse getUserDetails() {
+    public ApplicationUser getCurrentApplicationUser(){
         UserAccount userAccount = userAccountService.getCurrenUser();
-        ApplicationUser applicationUser = applicationUserRepository.findApplicationUserByUserAccount(userAccount).orElseThrow();
+        return applicationUserRepository.findApplicationUserByUserAccount(userAccount).orElseThrow();
+    }
+
+
+    public ApplicationUserResponse getUserDetails() {
+        ApplicationUser applicationUser = getCurrentApplicationUser();
 
         return ApplicationUserResponse.builder()
                 .firstName(applicationUser.getFirstName())
