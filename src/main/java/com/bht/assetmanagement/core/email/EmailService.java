@@ -17,7 +17,7 @@ public class EmailService {
     @Async
     public void sendActivationEmail(String email, String token) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("foo@bar.com");
+        message.setFrom("info@myAssets.com");
         message.setTo(email);
         message.setSubject("Aktivierungslink");
         String text = "Please click on the below url to activate your account: http://localhost:8080/auth/activate/account/" + token;
@@ -30,10 +30,10 @@ public class EmailService {
     }
 
     @Async
-    public void sendAssetStatusMail(String email, Boolean isEnabled) {
+    public void sendAssetStatusMail(String managerEmail, String employeeEmail, Boolean isEnabled) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("foo@bar.com");
-        message.setTo(email);
+        message.setFrom(managerEmail);
+        message.setTo(employeeEmail);
         message.setSubject("Asset Status");
         String textDisabled = "Der Status Ihrer Asset Anfrage hat sich geändert. Leider musste Ihre Anfrage abgelehnt werden";
         String textEnabled = "Der Status Ihrer Asset Anfrage hat sich geändert. Ihre Anfrage wurde angenommen.";
@@ -46,7 +46,23 @@ public class EmailService {
         try {
             mailSender.send(message);
         } catch (MailException e) {
-            throw new EmailException(String.format("Email could not be sent to %s", email));
+            throw new EmailException(String.format("Email could not be sent to %s", employeeEmail));
         }
     }
+
+    @Async
+    public void sendNewAssetInquiryMail(String employeeEmail, String managerEmail) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(employeeEmail);
+        message.setTo(managerEmail);
+        message.setSubject("Asset Status");
+        String text = "Sie haben eine neue Asset Anfrage erhalten.";
+        message.setText(text);
+        try {
+            mailSender.send(message);
+        } catch (MailException e) {
+            throw new EmailException(String.format("Email could not be sent to %s", managerEmail));
+        }
+    }
+
 }

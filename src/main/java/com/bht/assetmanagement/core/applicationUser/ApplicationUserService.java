@@ -3,11 +3,15 @@ package com.bht.assetmanagement.core.applicationUser;
 import com.bht.assetmanagement.persistence.dto.ApplicationUserRequest;
 import com.bht.assetmanagement.persistence.dto.ApplicationUserResponse;
 import com.bht.assetmanagement.persistence.entity.ApplicationUser;
+import com.bht.assetmanagement.persistence.entity.Role;
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.repository.ApplicationUserRepository;
 import com.bht.assetmanagement.core.userAccount.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

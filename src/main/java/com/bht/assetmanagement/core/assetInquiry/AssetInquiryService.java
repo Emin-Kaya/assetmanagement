@@ -4,6 +4,7 @@ import com.bht.assetmanagement.core.address.AddressService;
 import com.bht.assetmanagement.core.applicationUser.ApplicationUserService;
 import com.bht.assetmanagement.core.asset.AssetService;
 import com.bht.assetmanagement.core.email.EmailService;
+import com.bht.assetmanagement.core.userAccount.UserAccountService;
 import com.bht.assetmanagement.persistence.dto.AssetInquiryDto;
 import com.bht.assetmanagement.persistence.entity.*;
 import com.bht.assetmanagement.persistence.repository.AssetInquiryRepository;
@@ -11,6 +12,7 @@ import com.bht.assetmanagement.shared.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -19,6 +21,7 @@ public class AssetInquiryService {
     private final AddressService addressService;
     private final AssetService assetService;
     private final ApplicationUserService applicationUserService;
+    private final UserAccountService userAccountService;
     private final AssetInquiryRepository assetInquiryRepository;
     private final EmailService emailService;
     private final DateUtils dateUtils;
@@ -36,9 +39,12 @@ public class AssetInquiryService {
         assetInquiry.setAsset(asset);
 
         assetInquiryRepository.save(assetInquiry);
+        List<UserAccount> listOfAssetManagers = userAccountService.getAllUsersByRole(Role.MANAGER);
+        listOfAssetManagers.forEach(it->emailService.sendNewAssetInquiryMail(applicationUser.getUserAccount().getEmail(), it.getEmail()));
     }
 
     public void editAssetInquiry(String assetInquiryId, Boolean isEnabled) {
+        ApplicationUser assetManager = applicationUserService.getCurrentApplicationUser();
         AssetInquiry assetInquiry = assetInquiryRepository.findByAssetInquiryId(UUID.fromString(assetInquiryId));
         assetInquiry.setEnable(isEnabled);
         assetInquiry.setStatus(Status.DONE);
@@ -47,6 +53,6 @@ public class AssetInquiryService {
         } else {
             assetService.saveAssetToApplicationUser(assetInquiry.getAsset(), assetInquiry.getOwner());
         }
-        emailService.sendAssetStatusMail(assetInquiry.getOwner().getUserAccount().getEmail(), isEnabled);
+        emailService.sendAssetStatusMail(assetManager.getUserAccount().getEmail(), assetInquiry.getOwner().getUserAccount().getEmail(), isEnabled);
     }
 }

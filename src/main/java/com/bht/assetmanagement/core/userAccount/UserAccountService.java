@@ -1,9 +1,10 @@
 package com.bht.assetmanagement.core.userAccount;
 
+import com.bht.assetmanagement.persistence.entity.Role;
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.entity.VerificationToken;
-import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import com.bht.assetmanagement.persistence.repository.UserAccountRepository;
+import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -73,5 +76,9 @@ public class UserAccountService implements UserDetailsService {
     public UserAccount findByUsername(String name) {
         Optional<UserAccount> userAccount = userAccountRepository.findByUsername(name);
         return userAccount.orElseThrow();
+    }
+
+    public List<UserAccount> getAllUsersByRole(Role role) {
+        return userAccountRepository.findAllByRole(role);
     }
 }
