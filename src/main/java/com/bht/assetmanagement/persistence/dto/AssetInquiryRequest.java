@@ -5,16 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ApplicationUserResponse {
-    private UUID userId;
-    private String firstName;
-    private String lastName;
-    private String username;
-    private String email;
+public class AssetInquiryRequest {
+    private String note;
+    private Double price;
+    private String link;
+    private AddressRequest addressRequest;
+    private AssetRequest assetRequest;
 }

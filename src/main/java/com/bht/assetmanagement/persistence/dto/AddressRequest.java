@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AssetInquiryDto {
-    private String note;
-    private Double price;
-    private String link;
-    private AddressDto addressDto;
-    private AssetDto assetDto;
+public class AddressRequest {
+    private String streetName;
+    private String streetNumber;
+    private String postalCode;
+    private String city;
+    private String country;
 }

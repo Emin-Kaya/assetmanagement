@@ -11,10 +11,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ApplicationUserResponse {
-    private UUID userId;
-    private String firstName;
-    private String lastName;
-    private String username;
-    private String email;
+public class AddressResponse {
+    private UUID addressId;
+    private String streetName;
+    private String streetNumber;
+    private String postalCode;
+    private String city;
+    private String country;
 }

@@ -41,6 +41,7 @@ public class ApplicationUserService {
         ApplicationUser applicationUser = getCurrentApplicationUser();
 
         return ApplicationUserResponse.builder()
+                .userId(applicationUser.getUserId())
                 .firstName(applicationUser.getFirstName())
                 .lastName(applicationUser.getLastName())
                 .username(applicationUser.getUserAccount().getUsername())

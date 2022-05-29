@@ -1,9 +1,7 @@
 package com.bht.assetmanagement.core.asset;
 
 import com.bht.assetmanagement.core.applicationUser.ApplicationUserService;
-import com.bht.assetmanagement.persistence.dto.AddressDto;
-import com.bht.assetmanagement.persistence.dto.AssetDto;
-import com.bht.assetmanagement.persistence.entity.Address;
+import com.bht.assetmanagement.persistence.dto.AssetRequest;
 import com.bht.assetmanagement.persistence.entity.ApplicationUser;
 import com.bht.assetmanagement.persistence.entity.Asset;
 import com.bht.assetmanagement.persistence.repository.AssetRepository;
@@ -16,13 +14,13 @@ public class AssetService {
     private final AssetRepository assetRepository;
     private final ApplicationUserService applicationUserService;
 
-    public Asset createAsset(AssetDto assetDto) {
-        Asset asset = AssetMapper.INSTANCE.mapDtoToAsset(assetDto);
+    public Asset createAsset(AssetRequest assetRequest) {
+        Asset asset = AssetMapper.INSTANCE.mapRequestToAsset(assetRequest);
         return assetRepository.save(asset);
     }
 
-    public Asset getAsset(AssetDto assetDto) {
-        return assetRepository.findByName(assetDto.getName()).orElseGet(() -> createAsset(assetDto));
+    public Asset getAsset(AssetRequest assetRequest) {
+        return assetRepository.findByName(assetRequest.getName()).orElseGet(() -> createAsset(assetRequest));
     }
 
     public void deleteAsset(String assetId){

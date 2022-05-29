@@ -1,17 +1,21 @@
 package com.bht.assetmanagement.core.assetInquiry;
 
+import com.bht.assetmanagement.core.address.AddressMapper;
 import com.bht.assetmanagement.core.address.AddressService;
+import com.bht.assetmanagement.core.applicationUser.ApplicationUserMapper;
 import com.bht.assetmanagement.core.applicationUser.ApplicationUserService;
+import com.bht.assetmanagement.core.asset.AssetMapper;
 import com.bht.assetmanagement.core.asset.AssetService;
 import com.bht.assetmanagement.core.email.EmailService;
 import com.bht.assetmanagement.core.userAccount.UserAccountService;
-import com.bht.assetmanagement.persistence.dto.AssetInquiryDto;
+import com.bht.assetmanagement.persistence.dto.*;
 import com.bht.assetmanagement.persistence.entity.*;
 import com.bht.assetmanagement.persistence.repository.AssetInquiryRepository;
 import com.bht.assetmanagement.shared.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,11 +30,11 @@ public class AssetInquiryService {
     private final EmailService emailService;
     private final DateUtils dateUtils;
 
-    public void createAssetInquiry(AssetInquiryDto assetInquiryDto) {
-        AssetInquiry assetInquiry = AssetInquiryMapper.INSTANCE.mapDtoToAssetInquiry(assetInquiryDto);
+    public void createAssetInquiry(AssetInquiryRequest assetInquiryRequest) {
+        AssetInquiry assetInquiry = AssetInquiryMapper.INSTANCE.mapRequestToAssetInquiry(assetInquiryRequest);
         ApplicationUser applicationUser = applicationUserService.getCurrentApplicationUser();
-        Address address = addressService.getAddress(assetInquiryDto.getAddressDto());
-        Asset asset = assetService.getAsset(assetInquiryDto.getAssetDto());
+        Address address = addressService.getAddress(assetInquiryRequest.getAddressRequest());
+        Asset asset = assetService.getAsset(assetInquiryRequest.getAssetRequest());
 
         assetInquiry.setEntryDate(dateUtils.createLocalDate());
         assetInquiry.setStatus(Status.NOT_DONE);
@@ -54,5 +58,24 @@ public class AssetInquiryService {
             assetService.saveAssetToApplicationUser(assetInquiry.getAsset(), assetInquiry.getOwner());
         }
         emailService.sendAssetStatusMail(assetManager.getUserAccount().getEmail(), assetInquiry.getOwner().getUserAccount().getEmail(), isEnabled);
+    }
+
+    public List<AssetInquiryResponse> getAllAssetInquiry() {
+        List<AssetInquiry> assetInquiryList = assetInquiryRepository.findAll();
+        AssetInquiryResponse assetInquiryResponse;
+
+        List<AssetInquiryResponse> assetInquiryResponseList = new ArrayList<>();
+
+        for (AssetInquiry assetInquiry : assetInquiryList) {
+            assetInquiryResponse = AssetInquiryMapper.INSTANCE.mapEntityToAssetInquiryResponse(assetInquiry);
+
+            assetInquiryResponse.setAssetResponse(AssetMapper.INSTANCE.mapEntityToAssetResponse(assetInquiry.getAsset()));
+            assetInquiryResponse.setAddressResponse(AddressMapper.INSTANCE.mapEntityToAddressResponse(assetInquiry.getAddress()));
+            assetInquiryResponse.setOwner(ApplicationUserMapper.INSTANCE.mapEntityToApplicationUserResponse(assetInquiry.getOwner()));
+
+            assetInquiryResponseList.add(assetInquiryResponse);
+        }
+
+        return assetInquiryResponseList;
     }
 }
