@@ -1,12 +1,19 @@
 package com.bht.assetmanagement.core.asset;
 
 import com.bht.assetmanagement.core.applicationUser.ApplicationUserService;
+import com.bht.assetmanagement.persistence.dto.AssetDto;
 import com.bht.assetmanagement.persistence.dto.AssetRequest;
 import com.bht.assetmanagement.persistence.entity.ApplicationUser;
 import com.bht.assetmanagement.persistence.entity.Asset;
 import com.bht.assetmanagement.persistence.repository.AssetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,25 +30,27 @@ public class AssetService {
         return assetRepository.findByName(assetRequest.getName()).orElseGet(() -> createAsset(assetRequest));
     }
 
-    public void deleteAsset(String assetId){
-        assetRepository.deleteById(assetId);
-    }
-
-    public void saveAssetToApplicationUser(Asset asset, ApplicationUser applicationUser){
+    public void saveAssetToApplicationUser(Asset asset, ApplicationUser applicationUser) {
         applicationUser.getAssets().add(asset);
         applicationUserService.saveApplicationUser(applicationUser);
     }
 
-   /* public List<Asset> getAllAssetsOfUser() {
-        List<Asset> assetList = new ArrayList<>();
-        assetInquiryService.findAssetInquriysByOwner().forEach(it -> assetList.add(it.getAsset()));
-        return assetList;
-    }*/
+    public List<AssetDto> getAllAssetsOfUser() {
+        Set<Asset> assetsOfApplicationUser = applicationUserService.getCurrentApplicationUser().getAssets();
 
+        List<AssetDto> assetDtoList = new ArrayList<>();
+        assetsOfApplicationUser.forEach(it -> assetDtoList.add(AssetMapper.INSTANCE.mapEntityToAssetDto(it)));
+        return assetDtoList;
+    }
 
+    public void removeAssetFromUser(String id) {
+        ApplicationUser applicationUser = applicationUserService.getCurrentApplicationUser();
+        applicationUser.getAssets().remove(assetRepository.findById(UUID.fromString(id)).orElseThrow());
+        applicationUserService.saveApplicationUser(applicationUser);
+    }
 
-    /*public List<Asset> getAllAssets() {
-        return assetRepository.findAll(); todo adminAssetService
-    }*/
+    public List<AssetDto> getAllAssets() {
 
+        return assetRepository.findAll().stream().map(AssetMapper.INSTANCE::mapEntityToAssetDto).collect(Collectors.toList());
+    }
 }

@@ -21,7 +21,7 @@ public class VerificationToken {
     @Column(nullable = false, updatable = false)
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(generator = "UUID")
-    private UUID verificationTokenId;
+    private UUID id;
 
     @Column
     private String token;

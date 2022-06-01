@@ -2,8 +2,8 @@ package com.bht.assetmanagement.core.email;
 
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.entity.VerificationToken;
-import com.bht.assetmanagement.shared.exception.VerificationTokenNotFoundException;
 import com.bht.assetmanagement.persistence.repository.VerificationTokenRepository;
+import com.bht.assetmanagement.shared.exception.VerificationTokenNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

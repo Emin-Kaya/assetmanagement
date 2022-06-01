@@ -27,7 +27,7 @@ public class UserAccount implements UserDetails {
             allocationSize = 1)
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(generator = "uuid")
-    private UUID userAccountId;
+    private UUID id;
 
     @Column(unique = true, nullable = false)
     private String email;

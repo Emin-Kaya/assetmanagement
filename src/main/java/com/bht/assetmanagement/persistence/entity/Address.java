@@ -19,7 +19,7 @@ public class Address {
     @Column(nullable = false, updatable = false)
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(generator = "uuid")
-    private UUID addressId;
+    private UUID id;
 
     @Column(nullable = false)
     private String streetName;

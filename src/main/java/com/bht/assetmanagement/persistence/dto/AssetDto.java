@@ -11,11 +11,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AddressResponse {
-    private UUID addressId;
-    private String streetName;
-    private String streetNumber;
-    private String postalCode;
-    private String city;
-    private String country;
+public class AssetDto {
+    private UUID id;
+    private String name;
+    private String category;
 }

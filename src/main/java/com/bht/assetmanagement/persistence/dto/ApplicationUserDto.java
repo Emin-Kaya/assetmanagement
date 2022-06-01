@@ -11,8 +11,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ApplicationUserResponse {
-    private UUID userId;
+public class ApplicationUserDto {
+    private UUID id;
     private String firstName;
     private String lastName;
     private String username;

@@ -19,7 +19,7 @@ public class Asset {
     @Column(nullable = false, updatable = false)
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(generator = "UUID")
-    private UUID assetId;
+    private UUID id;
 
     @Column(unique = true)
     private String name;

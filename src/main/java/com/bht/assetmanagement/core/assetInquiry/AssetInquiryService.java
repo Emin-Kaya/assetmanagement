@@ -8,7 +8,8 @@ import com.bht.assetmanagement.core.asset.AssetMapper;
 import com.bht.assetmanagement.core.asset.AssetService;
 import com.bht.assetmanagement.core.email.EmailService;
 import com.bht.assetmanagement.core.userAccount.UserAccountService;
-import com.bht.assetmanagement.persistence.dto.*;
+import com.bht.assetmanagement.persistence.dto.AssetInquiryDto;
+import com.bht.assetmanagement.persistence.dto.AssetInquiryRequest;
 import com.bht.assetmanagement.persistence.entity.*;
 import com.bht.assetmanagement.persistence.repository.AssetInquiryRepository;
 import com.bht.assetmanagement.shared.date.DateUtils;
@@ -44,12 +45,12 @@ public class AssetInquiryService {
 
         assetInquiryRepository.save(assetInquiry);
         List<UserAccount> listOfAssetManagers = userAccountService.getAllUsersByRole(Role.MANAGER);
-        listOfAssetManagers.forEach(it->emailService.sendNewAssetInquiryMail(applicationUser.getUserAccount().getEmail(), it.getEmail()));
+        listOfAssetManagers.forEach(it -> emailService.sendNewAssetInquiryMail(applicationUser.getUserAccount().getEmail(), it.getEmail()));
     }
 
-    public void editAssetInquiry(String assetInquiryId, Boolean isEnabled) {
+    public void editAssetInquiry(String id, Boolean isEnabled) {
         ApplicationUser assetManager = applicationUserService.getCurrentApplicationUser();
-        AssetInquiry assetInquiry = assetInquiryRepository.findByAssetInquiryId(UUID.fromString(assetInquiryId));
+        AssetInquiry assetInquiry = assetInquiryRepository.findById(UUID.fromString(id));
         assetInquiry.setEnable(isEnabled);
         assetInquiry.setStatus(Status.DONE);
         if (!assetInquiry.isEnable()) {
@@ -60,22 +61,25 @@ public class AssetInquiryService {
         emailService.sendAssetStatusMail(assetManager.getUserAccount().getEmail(), assetInquiry.getOwner().getUserAccount().getEmail(), isEnabled);
     }
 
-    public List<AssetInquiryResponse> getAllAssetInquiry() {
+    public List<AssetInquiryDto> getAllAssetInquiry() {
         List<AssetInquiry> assetInquiryList = assetInquiryRepository.findAll();
-        AssetInquiryResponse assetInquiryResponse;
+        AssetInquiryDto assetInquiryDto;
 
-        List<AssetInquiryResponse> assetInquiryResponseList = new ArrayList<>();
+        List<AssetInquiryDto> assetInquiryDtoList = new ArrayList<>();
 
         for (AssetInquiry assetInquiry : assetInquiryList) {
-            assetInquiryResponse = AssetInquiryMapper.INSTANCE.mapEntityToAssetInquiryResponse(assetInquiry);
+            assetInquiryDto = AssetInquiryMapper.INSTANCE.mapEntityToAssetInquiryResponse(assetInquiry);
 
-            assetInquiryResponse.setAssetResponse(AssetMapper.INSTANCE.mapEntityToAssetResponse(assetInquiry.getAsset()));
-            assetInquiryResponse.setAddressResponse(AddressMapper.INSTANCE.mapEntityToAddressResponse(assetInquiry.getAddress()));
-            assetInquiryResponse.setOwner(ApplicationUserMapper.INSTANCE.mapEntityToApplicationUserResponse(assetInquiry.getOwner()));
+            assetInquiryDto.setAssetDto(AssetMapper.INSTANCE.mapEntityToAssetDto(assetInquiry.getAsset()));
+            assetInquiryDto.setAddressDTO(AddressMapper.INSTANCE.mapEntityToAddressResponse(assetInquiry.getAddress()));
+            assetInquiryDto.setOwner(ApplicationUserMapper.INSTANCE.mapEntityToApplicationUserResponse(
+                    assetInquiry.getOwner(),
+                    assetInquiry.getOwner().getUserAccount().getUsername(),
+                    assetInquiry.getOwner().getUserAccount().getEmail()));
 
-            assetInquiryResponseList.add(assetInquiryResponse);
+            assetInquiryDtoList.add(assetInquiryDto);
         }
 
-        return assetInquiryResponseList;
+        return assetInquiryDtoList;
     }
 }

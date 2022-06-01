@@ -25,6 +25,7 @@ public class EmailService {
         try {
             mailSender.send(message);
         } catch (MailException e) {
+            e.printStackTrace();
             throw new EmailException(String.format("Email could not be sent to %s", email));
         }
     }
@@ -64,5 +65,4 @@ public class EmailService {
             throw new EmailException(String.format("Email could not be sent to %s", managerEmail));
         }
     }
-
 }

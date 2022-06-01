@@ -6,7 +6,6 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -20,7 +19,7 @@ public class AssetInquiry {
     @Column(nullable = false, updatable = false)
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(generator = "UUID")
-    private UUID assetInquiryId;
+    private UUID id;
 
     @Column
     private String entryDate;

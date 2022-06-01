@@ -1,7 +1,7 @@
 package com.bht.assetmanagement.core.applicationUser;
 
+import com.bht.assetmanagement.persistence.dto.ApplicationUserDto;
 import com.bht.assetmanagement.persistence.dto.ApplicationUserRequest;
-import com.bht.assetmanagement.persistence.dto.ApplicationUserResponse;
 import com.bht.assetmanagement.persistence.entity.ApplicationUser;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -12,5 +12,5 @@ public interface ApplicationUserMapper {
 
     ApplicationUser mapRequestToApplicationUser(ApplicationUserRequest applicationUserRequest);
 
-    ApplicationUserResponse mapEntityToApplicationUserResponse(ApplicationUser applicationUser);
+    ApplicationUserDto mapEntityToApplicationUserResponse(ApplicationUser applicationUser, String username, String email);
 }

@@ -12,15 +12,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AssetInquiryResponse {
-    private UUID assetInquiryId;
+public class AssetInquiryDto {
+    private UUID id;
     private String note;
     private Double price;
     private String link;
     private boolean enable;
     private Status status;
-    private ApplicationUserResponse owner;
-    private AddressResponse addressResponse;
-    private AssetResponse assetResponse;
+    private ApplicationUserDto owner;
+    private AddressDto addressDTO;
+    private AssetDto assetDto;
 }
 

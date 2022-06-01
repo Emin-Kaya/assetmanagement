@@ -115,5 +115,4 @@ public class AuthService {
         String newToken = verificationTokenService.generateVerificationToken(verificationToken.getUserAccount());
         emailService.sendActivationEmail(verificationToken.getUserAccount().getUsername(), newToken);
     }
-
 }

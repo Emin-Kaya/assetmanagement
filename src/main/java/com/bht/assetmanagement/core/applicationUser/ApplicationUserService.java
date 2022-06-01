@@ -1,17 +1,13 @@
 package com.bht.assetmanagement.core.applicationUser;
 
+import com.bht.assetmanagement.core.userAccount.UserAccountService;
+import com.bht.assetmanagement.persistence.dto.ApplicationUserDto;
 import com.bht.assetmanagement.persistence.dto.ApplicationUserRequest;
-import com.bht.assetmanagement.persistence.dto.ApplicationUserResponse;
 import com.bht.assetmanagement.persistence.entity.ApplicationUser;
-import com.bht.assetmanagement.persistence.entity.Role;
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.repository.ApplicationUserRepository;
-import com.bht.assetmanagement.core.userAccount.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,17 +27,16 @@ public class ApplicationUserService {
         applicationUserRepository.save(applicationUser);
     }
 
-    public ApplicationUser getCurrentApplicationUser(){
+    public ApplicationUser getCurrentApplicationUser() {
         UserAccount userAccount = userAccountService.getCurrenUser();
         return applicationUserRepository.findApplicationUserByUserAccount(userAccount).orElseThrow();
     }
 
-
-    public ApplicationUserResponse getUserDetails() {
+    public ApplicationUserDto getUserDetails() {
         ApplicationUser applicationUser = getCurrentApplicationUser();
 
-        return ApplicationUserResponse.builder()
-                .userId(applicationUser.getUserId())
+        return ApplicationUserDto.builder()
+                .id(applicationUser.getId())
                 .firstName(applicationUser.getFirstName())
                 .lastName(applicationUser.getLastName())
                 .username(applicationUser.getUserAccount().getUsername())

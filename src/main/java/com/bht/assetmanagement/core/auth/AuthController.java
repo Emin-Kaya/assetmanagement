@@ -55,5 +55,4 @@ public class AuthController {
         authService.changeUserEmail(email);
         return status(HttpStatus.OK).body("Email changed!");
     }
-
 }

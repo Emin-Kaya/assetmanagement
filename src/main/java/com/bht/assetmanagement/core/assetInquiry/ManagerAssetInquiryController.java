@@ -1,6 +1,6 @@
 package com.bht.assetmanagement.core.assetInquiry;
 
-import com.bht.assetmanagement.persistence.dto.AssetInquiryResponse;
+import com.bht.assetmanagement.persistence.dto.AssetInquiryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@ public class ManagerAssetInquiryController {
 
     @GetMapping()
     public @ResponseBody
-    List<AssetInquiryResponse> getAllAssetInquiry() {
+    List<AssetInquiryDto> getAllAssetInquiry() {
         return assetInquiryService.getAllAssetInquiry();
     }
 }

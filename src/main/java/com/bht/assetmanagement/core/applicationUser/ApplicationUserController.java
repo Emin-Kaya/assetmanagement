@@ -1,7 +1,7 @@
 package com.bht.assetmanagement.core.applicationUser;
 
+import com.bht.assetmanagement.persistence.dto.ApplicationUserDto;
 import com.bht.assetmanagement.persistence.dto.ApplicationUserRequest;
-import com.bht.assetmanagement.persistence.dto.ApplicationUserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +22,7 @@ public class ApplicationUserController {
     }
 
     @GetMapping
-    public ResponseEntity<ApplicationUserResponse> getUserDetails() {
+    public ResponseEntity<ApplicationUserDto> getUserDetails() {
         return status(HttpStatus.CREATED).body(applicationUserService.getUserDetails());
     }
-
 }
