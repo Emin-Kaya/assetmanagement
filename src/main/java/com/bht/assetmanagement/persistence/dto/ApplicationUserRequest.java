@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApplicationUserRequest {
+    private String employeeId;
     private String firstName;
     private String lastName;
 }

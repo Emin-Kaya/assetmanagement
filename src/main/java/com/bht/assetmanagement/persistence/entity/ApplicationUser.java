@@ -22,6 +22,9 @@ public class ApplicationUser {
     @GeneratedValue(generator = "UUID")
     private UUID id;
 
+    @Column(nullable = false, unique = true)
+    private String employeeId;
+
     @Column(nullable = false)
     private String firstName;
 
