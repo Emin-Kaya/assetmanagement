@@ -6,12 +6,11 @@ import com.bht.assetmanagement.persistence.dto.AssetRequest;
 import com.bht.assetmanagement.persistence.entity.ApplicationUser;
 import com.bht.assetmanagement.persistence.entity.Asset;
 import com.bht.assetmanagement.persistence.repository.AssetRepository;
+import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,21 +35,26 @@ public class AssetService {
     }
 
     public List<AssetDto> getAllAssetsOfUser() {
-        Set<Asset> assetsOfApplicationUser = applicationUserService.getCurrentApplicationUser().getAssets();
-
-        List<AssetDto> assetDtoList = new ArrayList<>();
-        assetsOfApplicationUser.forEach(it -> assetDtoList.add(AssetMapper.INSTANCE.mapEntityToAssetDto(it)));
-        return assetDtoList;
+        List<Asset> assetsOfApplicationUser = applicationUserService.getCurrentApplicationUser().getAssets();
+        return assetsOfApplicationUser.stream().map(AssetMapper.INSTANCE::mapEntityToAssetDto).collect(Collectors.toList());
     }
 
-    public void removeAssetFromUser(String id) {
+    public void removeAssetFromUser(String assetId) {
         ApplicationUser applicationUser = applicationUserService.getCurrentApplicationUser();
-        applicationUser.getAssets().remove(assetRepository.findById(UUID.fromString(id)).orElseThrow());
+        applicationUser.getAssets().remove(assetRepository.findById(UUID.fromString(assetId)).orElseThrow(() -> new EntryNotFoundException("Asset with id " + assetId + " does not exist.")));
+
+        //TODO EMAIL SERVICE SEND EMAIL TO ASSETMANAGER + speichere in unternehmer storage
         applicationUserService.saveApplicationUser(applicationUser);
     }
 
     public List<AssetDto> getAllAssets() {
-
         return assetRepository.findAll().stream().map(AssetMapper.INSTANCE::mapEntityToAssetDto).collect(Collectors.toList());
+    }
+
+    public void deleteAsset(String assetId) {
+        Asset asset = assetRepository.findById(assetId).orElseThrow(() -> new EntryNotFoundException("Asset with id " + assetId + "does not exist."));
+
+        //TODO was mit assets die user haben ?
+        assetRepository.deleteById(assetId);
     }
 }

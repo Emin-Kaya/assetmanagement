@@ -6,7 +6,8 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -36,8 +37,8 @@ public class ApplicationUser {
     private UserAccount userAccount;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.ALL)
-    private Set<AssetInquiry> assetInquiries;
+    private List<AssetInquiry> assetInquiries = new ArrayList<>();
 
-    @OneToMany
-    private Set<Asset> assets;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Asset> assets = new ArrayList<>();
 }
