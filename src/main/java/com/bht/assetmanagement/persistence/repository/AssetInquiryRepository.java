@@ -5,6 +5,7 @@ import com.bht.assetmanagement.persistence.entity.AssetInquiry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -12,5 +13,5 @@ import java.util.UUID;
 public interface AssetInquiryRepository extends JpaRepository<AssetInquiry, String> {
     Set<AssetInquiry> findAllByOwner(ApplicationUser owner);
 
-    AssetInquiry findById(UUID id);
+    Optional<AssetInquiry> findById(UUID id);
 }

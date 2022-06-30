@@ -1,26 +1,32 @@
 package com.bht.assetmanagement.core.userAccount;
 
+import com.bht.assetmanagement.persistence.dto.UserAccountRequest;
 import com.bht.assetmanagement.persistence.entity.Role;
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.entity.VerificationToken;
 import com.bht.assetmanagement.persistence.repository.UserAccountRepository;
 import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserAccountService implements UserDetailsService {
 
+    private final PasswordEncoder passwordEncoder;
     private final UserAccountRepository userAccountRepository;
 
     @Override
@@ -79,5 +85,23 @@ public class UserAccountService implements UserDetailsService {
 
     public List<UserAccount> getAllUsersByRole(Role role) {
         return userAccountRepository.findAllByRole(role);
+    }
+
+    public void createAssetManagerUserAccount(UserAccountRequest userAccountRequest) {
+
+        if(existsUserAccount(userAccountRequest.getUsername())) {
+            throw new RuntimeException("UserAccount already exists.");
+        }
+
+        userAccountRequest.setPassword(passwordEncoder.encode(userAccountRequest.getPassword()));
+        UserAccount assetManagerUserAccount = UserAccountMapper.INSTANCE.mapUserAccountRequestToUserAccount(userAccountRequest);
+
+        userAccountRepository.save(assetManagerUserAccount);
+    }
+
+    public void deleteUserAccount(UUID id){
+        userAccountRepository.findById(id).orElseThrow(() -> new RuntimeException("UserAccount not found with id" + id ));
+        userAccountRepository.deleteById(id);
+
     }
 }

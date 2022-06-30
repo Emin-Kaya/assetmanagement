@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface UserAccountRepository extends JpaRepository<UserAccount, String> {
@@ -15,4 +16,8 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, String
     List<UserAccount> findAllByRole(Role role);
 
     Boolean existsByUsername(String username);
+
+    Optional<UserAccount> findById(UUID id);
+
+    void deleteById(UUID id);
 }
