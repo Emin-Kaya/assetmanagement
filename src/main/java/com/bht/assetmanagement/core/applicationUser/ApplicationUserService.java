@@ -26,7 +26,7 @@ public class ApplicationUserService {
         ApplicationUser applicationUser = ApplicationUserMapper.INSTANCE.mapRequestToApplicationUser(applicationUserRequest);
         UserAccount userAccount = userAccountService.getCurrenUser();
         if (userAccount.getApplicationUser() != null) {
-            throw new DublicateEntryException("User account data already saved."); //TODO duplicate  tnry exce
+            throw new DublicateEntryException("User account data already saved.");
         }
         applicationUser.setUserAccount(userAccount);
         save(applicationUser);

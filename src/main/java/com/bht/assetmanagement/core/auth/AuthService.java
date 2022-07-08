@@ -56,7 +56,7 @@ public class AuthService {
     }
 
     public String activateAccount(String token) throws MalformedURLException {
-        VerificationToken verificationToken = verificationTokenService.findVerificationTokenByToken(token); //TODO ÄNDER NAME
+        VerificationToken verificationToken = verificationTokenService.findVerificationTokenByToken(token);
         String msg;
         if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now(clock))) {
             sendNewActivationLink(verificationToken);

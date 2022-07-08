@@ -3,6 +3,7 @@ package com.bht.assetmanagement.core.verificationToken;
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.entity.VerificationToken;
 import com.bht.assetmanagement.persistence.repository.VerificationTokenRepository;
+import com.bht.assetmanagement.shared.exception.CouldNotDeleteException;
 import com.bht.assetmanagement.shared.exception.VerificationTokenNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class VerificationTokenService {
     public void deleteVerificationToken(String token) {
         int deleted = verificationTokenRepository.deleteVerificationTokenByToken(token);
         if (deleted == 0) {
-            throw new RuntimeException("Could not delete token"); //TODO CUSTOM EXCEPTION
+            throw new CouldNotDeleteException("Could not delete token");
         }
     }
 }
