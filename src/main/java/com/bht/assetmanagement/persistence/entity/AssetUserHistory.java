@@ -9,48 +9,30 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "asset_inquiry")
+@Table(name = "asset_user_history")
 @NoArgsConstructor
 @Getter
 @Setter
-public class AssetInquiry {
-
+public class AssetUserHistory {
     @Id
     @Column(nullable = false, updatable = false)
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(generator = "UUID")
     private UUID id;
 
-    @Column
-    private String entryDate;
+    @ManyToOne
+    private ApplicationUser applicationUser;
 
-    @Column
-    private String note;
-
-    @Column
-    private Double price;
-
-    @Column
-    private String link;
-
-    @Column
-    private boolean enable;
+    @ManyToOne
+    private Asset asset;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status;
+    private LendStatus lendStatus;
 
-    @ManyToOne
-    @JoinColumn(name = "application_user_id")
-    private ApplicationUser owner;
-
-    @OneToOne
-    @JoinColumn(name = "address_id")
-    private Address address;
+    @Column(nullable = false)
+    private java.lang.String rendDate;
 
     @Column
-    private String assetName;
-
-    @Column
-    private String assetCategory;
+    private java.lang.String returnDate;
 }

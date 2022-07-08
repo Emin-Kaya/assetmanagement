@@ -16,13 +16,13 @@ public class ApplicationUserController {
     private final ApplicationUserService applicationUserService;
 
     @PostMapping
-    public ResponseEntity<String> createApplicationUser(@RequestBody ApplicationUserRequest applicationUserRequest) {
-        applicationUserService.createApplicationUser(applicationUserRequest);
-        return status(HttpStatus.CREATED).body("Application user data saved.");
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApplicationUserDto createApplicationUser(@RequestBody ApplicationUserRequest applicationUserRequest) {
+        return applicationUserService.create(applicationUserRequest);
     }
 
     @GetMapping
     public ResponseEntity<ApplicationUserDto> getUserDetails() {
-        return status(HttpStatus.CREATED).body(applicationUserService.getUserDetails());
+        return status(HttpStatus.CREATED).body(applicationUserService.getProfileInformation());
     }
 }

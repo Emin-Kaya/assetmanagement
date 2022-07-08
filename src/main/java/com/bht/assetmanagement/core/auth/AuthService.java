@@ -2,15 +2,16 @@ package com.bht.assetmanagement.core.auth;
 
 import com.bht.assetmanagement.config.security.JwtUtils;
 import com.bht.assetmanagement.core.email.EmailService;
-import com.bht.assetmanagement.core.email.VerificationTokenService;
 import com.bht.assetmanagement.core.refreshToken.RefreshTokenService;
 import com.bht.assetmanagement.core.userAccount.UserAccountMapper;
 import com.bht.assetmanagement.core.userAccount.UserAccountService;
+import com.bht.assetmanagement.core.verificationToken.VerificationTokenService;
 import com.bht.assetmanagement.persistence.dto.*;
 import com.bht.assetmanagement.persistence.entity.Role;
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.entity.VerificationToken;
 import com.bht.assetmanagement.persistence.repository.UserAccountRepository;
+import com.bht.assetmanagement.shared.email.EmailUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.MalformedURLException;
 import java.time.Clock;
 import java.time.LocalDateTime;
 
@@ -35,8 +37,9 @@ public class AuthService {
     private final VerificationTokenService verificationTokenService;
     private final Clock clock;
     private final EmailService emailService;
+    private final EmailUtils emailUtils;
 
-    public void signUp(RegisterRequest registerRequest, Role role) {
+    public void signUp(RegisterRequest registerRequest, Role role) throws MalformedURLException {
         if (userAccountService.existsUserAccount(registerRequest.getUsername())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "This user account exists already.");
         }
@@ -49,10 +52,10 @@ public class AuthService {
         userAccountRepository.save(userAccount);
 
         String token = verificationTokenService.generateVerificationToken(userAccount);
-        emailService.sendActivationEmail(userAccount.getEmail(), token);
+        emailService.sendMessage(userAccount.getEmail(), emailUtils.getSubjectActivationText(), emailUtils.getBodyActivationText(token));
     }
 
-    public String activateAccount(String token) {
+    public String activateAccount(String token) throws MalformedURLException {
         VerificationToken verificationToken = verificationTokenService.findVerificationTokenByToken(token); //TODO ÄNDER NAME
         String msg;
         if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now(clock))) {
@@ -110,9 +113,10 @@ public class AuthService {
         userAccountService.updateUserAccount(userAccount);
     }
 
-    private void sendNewActivationLink(VerificationToken verificationToken) {
+    private void sendNewActivationLink(VerificationToken verificationToken) throws MalformedURLException {
         verificationTokenService.deleteVerificationToken(verificationToken.getToken());
         String newToken = verificationTokenService.generateVerificationToken(verificationToken.getUserAccount());
-        emailService.sendActivationEmail(verificationToken.getUserAccount().getUsername(), newToken);
+        emailService.sendMessage(verificationToken.getUserAccount().getEmail(), emailUtils.getSubjectActivationText(), emailUtils.getBodyActivationText(newToken));
+
     }
 }

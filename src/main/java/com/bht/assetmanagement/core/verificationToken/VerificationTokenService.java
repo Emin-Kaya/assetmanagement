@@ -1,4 +1,4 @@
-package com.bht.assetmanagement.core.email;
+package com.bht.assetmanagement.core.verificationToken;
 
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.entity.VerificationToken;

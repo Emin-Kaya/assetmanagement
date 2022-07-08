@@ -1,18 +1,21 @@
 package com.bht.assetmanagement.core.assetInquiry;
 
-import com.bht.assetmanagement.core.address.AddressMapper;
 import com.bht.assetmanagement.core.address.AddressService;
 import com.bht.assetmanagement.core.applicationUser.ApplicationUserMapper;
 import com.bht.assetmanagement.core.applicationUser.ApplicationUserService;
-import com.bht.assetmanagement.core.asset.AssetMapper;
 import com.bht.assetmanagement.core.asset.AssetService;
 import com.bht.assetmanagement.core.email.EmailService;
+import com.bht.assetmanagement.core.storage.StorageMapper;
+import com.bht.assetmanagement.core.storage.StorageService;
 import com.bht.assetmanagement.core.userAccount.UserAccountService;
+import com.bht.assetmanagement.persistence.dto.ApplicationUserDto;
 import com.bht.assetmanagement.persistence.dto.AssetInquiryDto;
 import com.bht.assetmanagement.persistence.dto.AssetInquiryRequest;
+import com.bht.assetmanagement.persistence.dto.AssetInquiryResponse;
 import com.bht.assetmanagement.persistence.entity.*;
 import com.bht.assetmanagement.persistence.repository.AssetInquiryRepository;
 import com.bht.assetmanagement.shared.date.DateUtils;
+import com.bht.assetmanagement.shared.email.EmailUtils;
 import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +23,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import static com.bht.assetmanagement.persistence.entity.Status.DONE;
 import static com.bht.assetmanagement.persistence.entity.Status.NOT_DONE;
 
 @Service
@@ -32,41 +37,103 @@ public class AssetInquiryService {
     private final UserAccountService userAccountService;
     private final AssetInquiryRepository assetInquiryRepository;
     private final EmailService emailService;
+    private final StorageService storageService;
     private final DateUtils dateUtils;
+    private final EmailUtils emailUtils;
 
-    public void createAssetInquiry(AssetInquiryRequest assetInquiryRequest) {
+    public AssetInquiry save(AssetInquiry assetInquiry) {
+        return assetInquiryRepository.save(assetInquiry);
+    }
+
+    public AssetInquiry find(String id) {
+        return assetInquiryRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntryNotFoundException("AssetInquiry with id: " + id + "does not exist."));
+    }
+
+    public AssetInquiryDto create(AssetInquiryRequest assetInquiryRequest) {
         AssetInquiry assetInquiry = AssetInquiryMapper.INSTANCE.mapRequestToAssetInquiry(assetInquiryRequest);
-        ApplicationUser applicationUser = applicationUserService.getCurrentApplicationUser();
-        Address address = addressService.getAddress(assetInquiryRequest.getAddressRequest());
-        Asset asset = assetService.getAsset(assetInquiryRequest.getAssetRequest());
+        ApplicationUser applicationUser = applicationUserService.getCurrentUser();
+        Address address = addressService.getOrCreateAddress(assetInquiryRequest.getAddressRequest());
 
         assetInquiry.setEntryDate(dateUtils.createLocalDate());
         assetInquiry.setStatus(NOT_DONE);
-        assetInquiry.setOwner(applicationUser);
         assetInquiry.setAddress(address);
-        assetInquiry.setAsset(asset);
 
         assetInquiryRepository.save(assetInquiry);
         List<UserAccount> listOfAssetManagers = userAccountService.getAllUsersByRole(Role.MANAGER);
-        listOfAssetManagers.forEach(it -> emailService.sendNewAssetInquiryMail(applicationUser.getUserAccount().getEmail(), it.getEmail()));
+
+        String subject = "Neue AssetAnfrage";
+        String body = "Sie haben eine neue Asset Anfrage erhalten.";
+
+        listOfAssetManagers.forEach(it -> emailService.sendMessage(applicationUser.getUserAccount().getEmail(), it.getEmail(), subject, body));
+
+        ApplicationUserDto applicationUserDto = ApplicationUserMapper.INSTANCE.mapEntityToApplicationUserResponse(applicationUser, applicationUser.getUserAccount().getUsername(), applicationUser.getUserAccount().getEmail());
+        AssetInquiryDto assetInquiryDto = AssetInquiryMapper.INSTANCE.mapEntityToAssetInquiryDto(assetInquiry);
+        assetInquiryDto.setOwner(applicationUserDto);
+        return assetInquiryDto;
     }
 
-    public void editAssetInquiry(String id, Boolean isEnabled) {
-        ApplicationUser assetManager = applicationUserService.getCurrentApplicationUser();
-        AssetInquiry assetInquiry = assetInquiryRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntryNotFoundException("AssetInquiry with id " + id + "does not exist."));
-        assetInquiry.setEnable(isEnabled);
-        assetInquiry.setStatus(Status.DONE);
-        if (!assetInquiry.isEnable()) {
-            assetInquiryRepository.delete(assetInquiry);
-        } else {
-            //todo check if asset in storage exist if exists -> return
-            //Todo else create Asset
-            assetService.saveAssetToApplicationUser(assetInquiry.getAsset(), assetInquiry.getOwner());
+    public void cancel(String assetInquiryId) {
+        AssetInquiry assetInquiry = find(assetInquiryId);
+        assetInquiry.setEnable(false);
+        assetInquiry.setStatus(DONE);
+        save(assetInquiry);
+    }
+
+    public AssetInquiryResponse confirm(String assetInquiryId) {
+        AssetInquiry assetInquiry = find(assetInquiryId);
+        AssetInquiryDto assetInquiryDto = new AssetInquiryDto();
+        ApplicationUser assetManager = applicationUserService.getCurrentUser();
+        String assetManagerMail = assetManager.getUserAccount().getEmail();
+
+        ApplicationUserDto applicationUserDto = ApplicationUserMapper.INSTANCE.mapEntityToApplicationUserResponse(assetInquiry.getOwner(),
+                assetInquiry.getOwner().getUserAccount().getUsername(),
+                assetInquiry.getOwner().getUserAccount().getEmail());
+
+        Asset asset = assetService.getAssetFromAssetInquiry(assetInquiry);
+        List<Storage> storageList = assetService.getAllStoragesContainsAsset(asset.getId().toString());
+
+        if (storageList.isEmpty()) {
+
+            emailService.sendMessage(assetManagerMail, emailUtils.getSubjectOrderNotificationText(), emailUtils.getBodyOrderNotificationText(assetInquiry));
+
+            String body = assetInquiry.isEnable() ? emailUtils.getBodyEnabledText() : emailUtils.getBodyDisabledText();
+            emailService.sendMessage(assetManagerMail, assetInquiry.getOwner().getUserAccount().getEmail(), emailUtils.getSubjectIsEnabledText(), body);
+
+            assetService.saveAssetToApplicationUser(asset, assetInquiry.getOwner());
+            assetInquiry.setStatus(DONE);
+            save(assetInquiry);
+            assetInquiryDto = AssetInquiryMapper.INSTANCE.mapEntityToAssetInquiryDto(assetInquiry);
+            assetInquiryDto.setOwner(applicationUserDto);
+
+            return AssetInquiryResponse.builder()
+                    .assetInquiryDto(assetInquiryDto)
+                    .build();
         }
-        emailService.sendAssetStatusMail(assetManager.getUserAccount().getEmail(), assetInquiry.getOwner().getUserAccount().getEmail(), isEnabled);
+        assetInquiryDto = AssetInquiryMapper.INSTANCE.mapEntityToAssetInquiryDto(assetInquiry);
+        assetInquiryDto.setOwner(applicationUserDto);
+        return AssetInquiryResponse.builder()
+                .assetInquiryDto(assetInquiryDto)
+                .storageDtoList(storageList.stream().map(StorageMapper.INSTANCE::mapEntityToStorageDto).collect(Collectors.toList()))
+                .build();
     }
 
-    public List<AssetInquiryDto> getAllAssetInquiry() {
+    public void handleInStorage(String storageId, String assetInquiryId) {
+        ApplicationUser assetManager = applicationUserService.getCurrentUser();
+        Storage storage = storageService.findStorage(storageId);
+        AssetInquiry assetInquiry = find(assetInquiryId);
+        Asset asset = assetService.getAssetFromAssetInquiry(assetInquiry);
+
+        assetService.removeAssetFromStorage(asset.getId().toString(), storage.getId().toString());
+        assetService.saveAssetToApplicationUser(asset, assetInquiry.getOwner());
+
+        assetInquiry.setStatus(DONE);
+        save(assetInquiry);
+
+        emailService.sendMessage(assetManager.getUserAccount().getEmail(), emailUtils.getSubjectOrderNotificationText(), emailUtils.getBodyOrderAndStorageRemoveNotificationText(assetInquiry, storage));
+    }
+
+
+    public List<AssetInquiryDto> getAll() {
         List<AssetInquiry> assetInquiryList = assetInquiryRepository.findAll();
         AssetInquiryDto assetInquiryDto;
 
@@ -74,14 +141,13 @@ public class AssetInquiryService {
 
         for (AssetInquiry assetInquiry : assetInquiryList) {
             if (assetInquiry.getStatus() == NOT_DONE) {
-                assetInquiryDto = AssetInquiryMapper.INSTANCE.mapEntityToAssetInquiryResponse(assetInquiry);
-                assetInquiryDto.setAssetDto(AssetMapper.INSTANCE.mapEntityToAssetDto(assetInquiry.getAsset()));
-                assetInquiryDto.setAddressDTO(AddressMapper.INSTANCE.mapEntityToAddressResponse(assetInquiry.getAddress()));
-                assetInquiryDto.setOwner(ApplicationUserMapper.INSTANCE.mapEntityToApplicationUserResponse(
-                        assetInquiry.getOwner(),
+                ApplicationUserDto applicationUserDto = ApplicationUserMapper.INSTANCE.mapEntityToApplicationUserResponse(assetInquiry.getOwner(),
                         assetInquiry.getOwner().getUserAccount().getUsername(),
-                        assetInquiry.getOwner().getUserAccount().getEmail()));
-
+                        assetInquiry.getOwner().getUserAccount().getEmail());
+                assetInquiryDto = AssetInquiryMapper.INSTANCE.mapEntityToAssetInquiryDto(assetInquiry);
+                assetInquiryDto.setOwner(applicationUserDto);
+                assetInquiryDto.setAssetName(assetInquiry.getAssetName());
+                assetInquiryDto.setAssetCategory(assetInquiry.getAssetCategory());
                 assetInquiryDtoList.add(assetInquiryDto);
             }
         }

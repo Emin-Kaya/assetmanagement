@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class AssetDto {
-    private UUID id;
+    private String id;
     private String name;
     private String category;
 }

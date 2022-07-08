@@ -11,12 +11,17 @@ import org.springframework.stereotype.Service;
 public class AddressService {
     private final AddressRepository addressRepository;
 
-    public Address createAddress(AddressRequest addressRequest) {
-        Address address = AddressMapper.INSTANCE.mapRequestToAddress(addressRequest);
-        return addressRepository.save(address);
+    public Address getOrCreateAddress(AddressRequest addressRequest) {
+        return addressRepository
+                .findAddressByStreetNameAndStreetNumberAndPostalCode(
+                        addressRequest.getStreetName(),
+                        addressRequest.getStreetNumber(),
+                        addressRequest.getPostalCode())
+                .orElseGet(() -> createAddress(addressRequest));
     }
 
-    public Address getAddress(AddressRequest addressRequest) {
-        return addressRepository.findAddressByStreetNameAndStreetNumberAndPostalCode(addressRequest.getStreetName(), addressRequest.getStreetNumber(), addressRequest.getPostalCode()).orElseGet(() -> createAddress(addressRequest));
+    private Address createAddress(AddressRequest addressRequest) {
+        Address address = AddressMapper.INSTANCE.mapRequestToAddress(addressRequest);
+        return addressRepository.save(address);
     }
 }

@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class AddressDto {
-    private UUID id;
+    private String id;
     private String streetName;
     private String streetNumber;
     private String postalCode;

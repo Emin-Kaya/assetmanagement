@@ -1,5 +1,6 @@
 package com.bht.assetmanagement.core.userAccount;
 
+import com.bht.assetmanagement.persistence.dto.UserAccountDto;
 import com.bht.assetmanagement.persistence.dto.UserAccountRequest;
 import com.bht.assetmanagement.persistence.entity.Role;
 import com.bht.assetmanagement.persistence.entity.UserAccount;
@@ -7,7 +8,6 @@ import com.bht.assetmanagement.persistence.entity.VerificationToken;
 import com.bht.assetmanagement.persistence.repository.UserAccountRepository;
 import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -16,7 +16,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -78,18 +77,13 @@ public class UserAccountService implements UserDetailsService {
         return findUserByUsername(authentication.getName());
     }
 
-    public UserAccount findByUsername(String name) {
-        Optional<UserAccount> userAccount = userAccountRepository.findByUsername(name);
-        return userAccount.orElseThrow();
-    }
-
     public List<UserAccount> getAllUsersByRole(Role role) {
         return userAccountRepository.findAllByRole(role);
     }
 
-    public void createAssetManagerUserAccount(UserAccountRequest userAccountRequest) {
+    public UserAccountDto createAssetManagerUserAccount(UserAccountRequest userAccountRequest) {
 
-        if(existsUserAccount(userAccountRequest.getUsername())) {
+        if (existsUserAccount(userAccountRequest.getUsername())) {
             throw new RuntimeException("UserAccount already exists.");
         }
 
@@ -97,11 +91,12 @@ public class UserAccountService implements UserDetailsService {
         UserAccount assetManagerUserAccount = UserAccountMapper.INSTANCE.mapUserAccountRequestToUserAccount(userAccountRequest);
 
         userAccountRepository.save(assetManagerUserAccount);
+
+        return UserAccountMapper.INSTANCE.mapUserAccountToUserAccountDto(assetManagerUserAccount);
     }
 
-    public void deleteUserAccount(UUID id){
-        userAccountRepository.findById(id).orElseThrow(() -> new RuntimeException("UserAccount not found with id" + id ));
+    public void delete(UUID id) {
+        userAccountRepository.findById(id).orElseThrow(() -> new RuntimeException("UserAccount not found with id" + id));
         userAccountRepository.deleteById(id);
-
     }
 }

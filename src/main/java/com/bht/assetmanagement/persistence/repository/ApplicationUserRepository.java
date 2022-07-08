@@ -12,5 +12,6 @@ import java.util.UUID;
 public interface ApplicationUserRepository extends JpaRepository<ApplicationUser, String> {
     Optional<ApplicationUser> findApplicationUserByUserAccount(UserAccount userAccount);
     Optional<ApplicationUser> findById(UUID id);
+    Boolean existsById(UUID id);
     void deleteById(UUID id);
 }

@@ -9,7 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -128,7 +127,8 @@ public class TestDataService {
         assetInquiry1.setStatus(Status.NOT_DONE);
         assetInquiry1.setOwner(applicationUser1);
         assetInquiry1.setAddress(address1);
-        assetInquiry1.setAsset(asset1);
+        assetInquiry1.setAssetName(asset1.getName());
+        assetInquiry1.setAssetCategory(asset2.getCategory());
         assetInquiryRepository.save(assetInquiry1);
 
         UserAccount userAccount2 = new UserAccount();
@@ -155,7 +155,8 @@ public class TestDataService {
         assetInquiry2.setStatus(Status.NOT_DONE);
         assetInquiry2.setOwner(applicationUser2);
         assetInquiry2.setAddress(address2);
-        assetInquiry2.setAsset(asset2);
+        assetInquiry2.setAssetName(asset2.getName());
+        assetInquiry2.setAssetCategory(asset2.getCategory());
         assetInquiryRepository.save(assetInquiry2);
 
         UserAccount userAccount3 = new UserAccount();
@@ -182,7 +183,8 @@ public class TestDataService {
         assetInquiry3.setStatus(Status.NOT_DONE);
         assetInquiry3.setOwner(applicationUser3);
         assetInquiry3.setAddress(address2);
-        assetInquiry3.setAsset(asset2);
+        assetInquiry3.setAssetName(asset2.getName());
+        assetInquiry3.setAssetCategory(asset2.getCategory());
         assetInquiryRepository.save(assetInquiry3);
 
         UserAccount userAccount4 = new UserAccount();
@@ -209,7 +211,8 @@ public class TestDataService {
         assetInquiry4.setStatus(Status.NOT_DONE);
         assetInquiry4.setOwner(applicationUser4);
         assetInquiry4.setAddress(address2);
-        assetInquiry4.setAsset(asset2);
+        assetInquiry4.setAssetName(asset2.getName());
+        assetInquiry4.setAssetCategory(asset2.getCategory());
         assetInquiryRepository.save(assetInquiry4);
 
         UserAccount userAccount5 = new UserAccount();
@@ -236,7 +239,8 @@ public class TestDataService {
         assetInquiry5.setStatus(Status.NOT_DONE);
         assetInquiry5.setOwner(applicationUser5);
         assetInquiry5.setAddress(address2);
-        assetInquiry5.setAsset(asset2);
+        assetInquiry5.setAssetName(asset2.getName());
+        assetInquiry5.setAssetCategory(asset2.getCategory());
         assetInquiryRepository.save(assetInquiry5);
 
         UserAccount userAccount6 = new UserAccount();
@@ -263,7 +267,8 @@ public class TestDataService {
         assetInquiry6.setStatus(Status.NOT_DONE);
         assetInquiry6.setOwner(applicationUser6);
         assetInquiry6.setAddress(address2);
-        assetInquiry6.setAsset(asset2);
+        assetInquiry6.setAssetName(asset2.getName());
+        assetInquiry6.setAssetCategory(asset2.getCategory());
         assetInquiryRepository.save(assetInquiry6);
 
         UserAccount userAccount7 = new UserAccount();
@@ -290,7 +295,8 @@ public class TestDataService {
         assetInquiry7.setStatus(Status.NOT_DONE);
         assetInquiry7.setOwner(applicationUser7);
         assetInquiry7.setAddress(address2);
-        assetInquiry7.setAsset(asset2);
+        assetInquiry7.setAssetName(asset2.getName());
+        assetInquiry7.setAssetCategory(asset2.getCategory());
         assetInquiryRepository.save(assetInquiry7);
 
     }
