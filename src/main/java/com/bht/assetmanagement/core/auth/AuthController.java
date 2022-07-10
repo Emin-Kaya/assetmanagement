@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.MalformedURLException;
 
 import static org.springframework.http.ResponseEntity.status;
 
@@ -19,19 +20,20 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@Valid @RequestBody RegisterRequest loginRequest) {
-        authService.signUp(loginRequest, Role.EMPLOYEE);
-        return status(HttpStatus.CREATED).body("Registration succesful.");
+    @ResponseStatus(HttpStatus.CREATED)
+    public void signUp(@RequestBody RegisterRequest registerRequest) throws MalformedURLException {
+        authService.signUp(registerRequest, Role.EMPLOYEE);
     }
 
     @GetMapping("/activate/account/{token}")
-    public ResponseEntity<String> activateAccount(@PathVariable String token) {
-        return status(HttpStatus.OK).body(authService.activateAccount(token));
+    @ResponseStatus(HttpStatus.OK)
+    public void activateAccount(@PathVariable String token) throws MalformedURLException {
+        authService.activateAccount(token);
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthenticationResponse> signIn(@RequestBody LoginRequest loginRequest) {
-        return status(HttpStatus.ACCEPTED).body(authService.signIn(loginRequest));
+    public AuthenticationResponse signIn(@RequestBody LoginRequest loginRequest) {
+       return authService.signIn(loginRequest);
     }
 
     @PostMapping("/refresh/token")
@@ -40,19 +42,20 @@ public class AuthController {
     }
 
     @PostMapping("/signout")
-    public ResponseEntity<String> signOut(@RequestBody RefreshTokenRequest refreshTokenRequest) {
-        return status(HttpStatus.OK).body(authService.signOut(refreshTokenRequest));
+    @ResponseStatus(HttpStatus.OK)
+    public void signOut(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+        authService.signOut(refreshTokenRequest);
     }
 
     @PutMapping("/change/password")
-    public ResponseEntity<String> changePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
+    @ResponseStatus(HttpStatus.OK)
+    public void changePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
         authService.changeUserPassword(passwordChangeRequest);
-        return status(HttpStatus.OK).body("Password changed!");
     }
 
     @PutMapping("/change/email")
-    public ResponseEntity<String> changeEmail(@RequestParam String email) {
+    @ResponseStatus(HttpStatus.OK)
+    public void changeEmail(@RequestParam String email) {
         authService.changeUserEmail(email);
-        return status(HttpStatus.OK).body("Email changed!");
     }
 }

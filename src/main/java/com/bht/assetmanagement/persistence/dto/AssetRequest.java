@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class AssetRequest {
     private String name;
     private String category;
+    private String storageId;
 }

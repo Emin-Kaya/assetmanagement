@@ -14,5 +14,6 @@ public class AssetInquiryRequest {
     private Double price;
     private String link;
     private AddressRequest addressRequest;
-    private AssetRequest assetRequest;
+    private String assetName;
+    private String assetCategory;
 }

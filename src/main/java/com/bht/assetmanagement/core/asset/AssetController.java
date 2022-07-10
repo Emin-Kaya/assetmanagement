@@ -1,14 +1,12 @@
 package com.bht.assetmanagement.core.asset;
 
 import com.bht.assetmanagement.persistence.dto.AssetDto;
+import com.bht.assetmanagement.persistence.dto.AssetRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static org.springframework.http.ResponseEntity.status;
 
 @RestController
 @RequestMapping("/api/v1/asset")
@@ -16,15 +14,21 @@ import static org.springframework.http.ResponseEntity.status;
 public class AssetController {
     public final AssetService assetService;
 
+    @PostMapping()
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void saveAssetToStorage(@RequestBody AssetRequest assetRequest) {
+        assetService.saveRequestToStorage(assetRequest);
+    }
+
     @GetMapping()
     public @ResponseBody
     List<AssetDto> getAllAssets() {
-        return assetService.getAllAssets();
+        return assetService.getAll();
     }
 
-    @DeleteMapping
-    public ResponseEntity<String> deleteAsset(@RequestParam String assetId) {
-        assetService.deleteAsset(assetId);
-        return status(HttpStatus.ACCEPTED).body("Asset with id: " + assetId + " is deleted.");
+
+    @PutMapping("/{assetId}")
+    public void removeAssetFromStorage(@PathVariable String assetId, @RequestParam String storageId) {
+        assetService.removeAssetFromStorage(assetId, storageId);
     }
 }

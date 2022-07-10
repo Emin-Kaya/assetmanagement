@@ -12,6 +12,5 @@ public interface AssetInquiryMapper {
 
     AssetInquiry mapRequestToAssetInquiry(AssetInquiryRequest assetInquiryRequest);
 
-    AssetInquiryDto mapEntityToAssetInquiryResponse(AssetInquiry assetInquiry);
-
+    AssetInquiryDto mapEntityToAssetInquiryDto(AssetInquiry assetInquiry);
 }

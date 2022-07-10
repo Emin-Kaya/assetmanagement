@@ -5,11 +5,14 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -34,17 +37,6 @@ public class JwtUtils {
                 .compact();
     }
 
-    public String generateTokenWithUsername(String username) {
-
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setIssuer("asset-management")
-                .setExpiration(new Date())
-                .signWith(SignatureAlgorithm.HS256, jwtSecret)
-                .compact();
-    }
-
     public boolean validateJwtToken(String jwt) {
         Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt);
         return true;
@@ -54,4 +46,11 @@ public class JwtUtils {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody().getSubject();
     }
 
+    public String parseJwt(HttpServletRequest request) {
+        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return bearerToken;
+    }
 }

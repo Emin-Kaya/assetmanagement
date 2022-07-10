@@ -3,7 +3,6 @@ package com.bht.assetmanagement.config;
 import com.bht.assetmanagement.config.security.JwtAuthorizationFilter;
 import com.bht.assetmanagement.config.security.JwtUtils;
 import com.bht.assetmanagement.core.userAccount.UserAccountService;
-import com.bht.assetmanagement.shared.exception.UnauthorizedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,7 +68,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/applicationUser/**").permitAll()
                 .antMatchers("/api/v1/employee/asset/**").hasAnyAuthority("ROLE_EMPLOYEE")
                 .antMatchers("/api/v1/asset/**").hasAnyAuthority("ROLE_MANAGER", "ROLE_ADMIN")
+                .antMatchers("/api/v1/storage/**").hasAnyAuthority("ROLE_MANAGER", "ROLE_ADMIN")
                 .antMatchers("/api/v1/assetInquiry/**").hasAnyAuthority("ROLE_EMPLOYEE")
+                .antMatchers("/api/v1/manager/assetInquiry/**").hasAnyAuthority("ROLE_MANAGER", "ROLE_ADMIN")
                 .antMatchers("/api/v1/admin/userAccount/**").hasAnyAuthority("ROLE_ADMIN")
                 .antMatchers("/api/v1/admin/applicationUser/**").hasAnyAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated();

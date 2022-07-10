@@ -48,7 +48,9 @@ public class AssetInquiry {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @OneToOne
-    @JoinColumn(name = "asset_id")
-    private Asset asset;
+    @Column
+    private String assetName;
+
+    @Column
+    private String assetCategory;
 }
