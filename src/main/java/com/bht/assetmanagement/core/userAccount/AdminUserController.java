@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.net.MalformedURLException;
 import java.util.UUID;
 
 import static org.springframework.http.ResponseEntity.status;
@@ -18,7 +19,8 @@ public class AdminUserController {
     private final UserAccountService userAccountService;
 
     @PostMapping
-    public UserAccountDto createAssetManagerUserAccount(@RequestBody UserAccountRequest userAccountRequest) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserAccountDto createAssetManagerUserAccount(@RequestBody UserAccountRequest userAccountRequest) throws MalformedURLException {
         return userAccountService.createAssetManagerUserAccount(userAccountRequest);
     }
 

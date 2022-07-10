@@ -40,7 +40,7 @@ public class AuthService {
     private final EmailUtils emailUtils;
 
     public void signUp(RegisterRequest registerRequest, Role role) throws MalformedURLException {
-        if (userAccountService.existsUserAccount(registerRequest.getUsername())) {
+        if (userAccountService.existsUserAccount(registerRequest.getUsername(),registerRequest.getEmail())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "This user account exists already.");
         }
 

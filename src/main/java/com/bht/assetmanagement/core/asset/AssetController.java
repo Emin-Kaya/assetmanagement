@@ -14,7 +14,7 @@ import java.util.List;
 public class AssetController {
     public final AssetService assetService;
 
-    @PostMapping("/{storageId}")
+    @PostMapping()
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void saveAssetToStorage(@RequestBody AssetRequest assetRequest) {
         assetService.saveRequestToStorage(assetRequest);

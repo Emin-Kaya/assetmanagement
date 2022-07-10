@@ -17,20 +17,19 @@ import static org.springframework.http.ResponseEntity.status;
 public class ManagerAssetInquiryController {
     private final AssetInquiryService assetInquiryService;
 
-    @PutMapping("/{assetInquiryId}")
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<String> cancelAssetInquiry(@PathVariable String assetInquiryId) {
-        assetInquiryService.cancel(assetInquiryId);
-        return status(HttpStatus.ACCEPTED).body("Asset inquiry was rejected.");
+    public void cancelAssetInquiry(@PathVariable String id) {
+        assetInquiryService.cancel(id);
     }
 
-    @PutMapping("/confirm/{assetInquiryId}")
+    @PutMapping("/confirm/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public AssetInquiryResponse confirmAssetInquiry(@PathVariable String assetInquiryId) {
-        return assetInquiryService.confirm(assetInquiryId);
+    public AssetInquiryResponse confirmAssetInquiry(@PathVariable String id) {
+        return assetInquiryService.confirm(id);
     }
 
-    @PutMapping("/handle/{assetInquiryId}")
+    @PutMapping("/confirm/handle/{assetInquiryId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void handleAssetInquriyInStorage(@PathVariable String assetInquiryId, @RequestParam String storageId) {
         assetInquiryService.handleInStorage(storageId, assetInquiryId);

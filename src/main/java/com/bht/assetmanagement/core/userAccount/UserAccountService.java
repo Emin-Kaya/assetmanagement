@@ -1,11 +1,14 @@
 package com.bht.assetmanagement.core.userAccount;
 
+import com.bht.assetmanagement.core.email.EmailService;
 import com.bht.assetmanagement.persistence.dto.UserAccountDto;
 import com.bht.assetmanagement.persistence.dto.UserAccountRequest;
 import com.bht.assetmanagement.persistence.entity.Role;
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.entity.VerificationToken;
 import com.bht.assetmanagement.persistence.repository.UserAccountRepository;
+import com.bht.assetmanagement.shared.email.EmailUtils;
+import com.bht.assetmanagement.shared.exception.DublicateEntryException;
 import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -17,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,6 +31,8 @@ public class UserAccountService implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserAccountRepository userAccountRepository;
+    private final EmailService emailService;
+    private final EmailUtils emailUtils;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -64,9 +70,18 @@ public class UserAccountService implements UserDetailsService {
         userAccountRepository.save(userAccount);
     }
 
-    public boolean existsUserAccount(String username) {
+    public boolean existsUserAccountByUserName(String username) {
         return userAccountRepository.existsByUsername(username);
     }
+
+    public boolean existsUserAccountByEmail(String email) {
+        return userAccountRepository.existsByEmail(email);
+    }
+
+    public boolean existsUserAccount(String username, String email){
+        return existsUserAccountByUserName(username) || existsUserAccountByEmail(email);
+    }
+
 
     public UserAccount getProfileInformation() {
         return findUserByUsername(getCurrenUser().getUsername());
@@ -81,17 +96,17 @@ public class UserAccountService implements UserDetailsService {
         return userAccountRepository.findAllByRole(role);
     }
 
-    public UserAccountDto createAssetManagerUserAccount(UserAccountRequest userAccountRequest) {
+    public UserAccountDto createAssetManagerUserAccount(UserAccountRequest userAccountRequest) throws MalformedURLException {
 
-        if (existsUserAccount(userAccountRequest.getUsername())) {
-            throw new RuntimeException("UserAccount already exists.");
+        if (existsUserAccount(userAccountRequest.getUsername(),userAccountRequest.getEmail()) ) {
+            throw new DublicateEntryException("UserAccount already exists.");
         }
 
         userAccountRequest.setPassword(passwordEncoder.encode(userAccountRequest.getPassword()));
         UserAccount assetManagerUserAccount = UserAccountMapper.INSTANCE.mapUserAccountRequestToUserAccount(userAccountRequest);
 
         userAccountRepository.save(assetManagerUserAccount);
-
+        emailService.sendMessage(userAccountRequest.getEmail(), emailUtils.getSubjectNewUserAccount(), emailUtils.getBodyNewUserAccount(userAccountRequest));
         return UserAccountMapper.INSTANCE.mapUserAccountToUserAccountDto(assetManagerUserAccount);
     }
 

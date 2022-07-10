@@ -75,12 +75,17 @@ public class AssetInquiryService {
     public void cancel(String assetInquiryId) {
         AssetInquiry assetInquiry = find(assetInquiryId);
         assetInquiry.setEnable(false);
+
+        ApplicationUser assetManager = applicationUserService.getCurrentUser();
+        String assetManagerMail = assetManager.getUserAccount().getEmail();
+
+        emailService.sendMessage(assetManagerMail, assetInquiry.getOwner().getUserAccount().getEmail(), emailUtils.getSubjectIsEnabledText(), emailUtils.getBodyDisabledText());
         assetInquiry.setStatus(DONE);
         save(assetInquiry);
     }
 
-    public AssetInquiryResponse confirm(String assetInquiryId) {
-        AssetInquiry assetInquiry = find(assetInquiryId);
+    public AssetInquiryResponse confirm(String id) {
+        AssetInquiry assetInquiry = find(id);
         AssetInquiryDto assetInquiryDto = new AssetInquiryDto();
         ApplicationUser assetManager = applicationUserService.getCurrentUser();
         String assetManagerMail = assetManager.getUserAccount().getEmail();
@@ -96,8 +101,7 @@ public class AssetInquiryService {
 
             emailService.sendMessage(assetManagerMail, emailUtils.getSubjectOrderNotificationText(), emailUtils.getBodyOrderNotificationText(assetInquiry));
 
-            String body = assetInquiry.isEnable() ? emailUtils.getBodyEnabledText() : emailUtils.getBodyDisabledText();
-            emailService.sendMessage(assetManagerMail, assetInquiry.getOwner().getUserAccount().getEmail(), emailUtils.getSubjectIsEnabledText(), body);
+            emailService.sendMessage(assetManagerMail, assetInquiry.getOwner().getUserAccount().getEmail(), emailUtils.getSubjectIsEnabledText(), emailUtils.getBodyEnabledText());
 
             assetService.saveAssetToApplicationUser(asset, assetInquiry.getOwner());
             assetInquiry.setStatus(DONE);

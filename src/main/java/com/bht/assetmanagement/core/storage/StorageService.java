@@ -4,6 +4,7 @@ import com.bht.assetmanagement.persistence.dto.StorageDto;
 import com.bht.assetmanagement.persistence.dto.StorageRequest;
 import com.bht.assetmanagement.persistence.entity.Storage;
 import com.bht.assetmanagement.persistence.repository.StorageRepository;
+import com.bht.assetmanagement.shared.exception.DublicateEntryException;
 import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class StorageService {
     public StorageDto create(StorageRequest storageRequest) {
         Storage storage = StorageMapper.INSTANCE.mapStoragRequestToEntity(storageRequest.getName());
         if (existsStorage(storageRequest.getName())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "This storage exists already.");
+            throw new DublicateEntryException("This storage exists already.");
         } else {
             save(storage);
         }

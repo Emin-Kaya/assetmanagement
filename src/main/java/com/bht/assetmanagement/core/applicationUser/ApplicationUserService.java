@@ -9,6 +9,7 @@ import com.bht.assetmanagement.persistence.repository.ApplicationUserRepository;
 import com.bht.assetmanagement.shared.exception.DublicateEntryException;
 import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -53,8 +54,8 @@ public class ApplicationUserService {
                 .email(applicationUser.getUserAccount().getEmail()).build();
     }
 
-    public void delete(UUID id) {
-        ApplicationUser applicationUser = applicationUserRepository.findById(id).orElseThrow(() -> new EntryNotFoundException("ApplicationUser not found with id " + id));
+    public void delete(String id) {
+        ApplicationUser applicationUser = applicationUserRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntryNotFoundException("ApplicationUser not found with id " + id));
         applicationUserRepository.delete(applicationUser);
     }
 

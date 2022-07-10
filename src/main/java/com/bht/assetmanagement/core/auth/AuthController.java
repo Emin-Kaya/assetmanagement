@@ -21,8 +21,8 @@ public class AuthController {
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public void signUp(@Valid @RequestBody RegisterRequest loginRequest) throws MalformedURLException {
-        authService.signUp(loginRequest, Role.EMPLOYEE);
+    public void signUp(@RequestBody RegisterRequest registerRequest) throws MalformedURLException {
+        authService.signUp(registerRequest, Role.EMPLOYEE);
     }
 
     @GetMapping("/activate/account/{token}")

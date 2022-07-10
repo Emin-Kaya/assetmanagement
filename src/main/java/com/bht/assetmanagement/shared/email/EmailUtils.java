@@ -1,5 +1,7 @@
 package com.bht.assetmanagement.shared.email;
 
+import com.bht.assetmanagement.persistence.dto.UserAccountDto;
+import com.bht.assetmanagement.persistence.dto.UserAccountRequest;
 import com.bht.assetmanagement.persistence.entity.AssetInquiry;
 import com.bht.assetmanagement.persistence.entity.Storage;
 import org.springframework.stereotype.Service;
@@ -75,5 +77,18 @@ public class EmailUtils {
                 + "\n"
                 + assetInquiry.getAddress().getCountry()
                 + "\n zu schicken.";
+    }
+
+    public String getSubjectNewUserAccount(){
+        return "Neuer User Account";
+    }
+
+    public String getBodyNewUserAccount(UserAccountRequest userAccountRequest) throws MalformedURLException {
+        URL activationUrl = new URL("http://localhost:8080/auth/signin");
+
+        return "Es wurde für Sie ein neuer User Account für MyAssets erstellt. Bitte ändern Sie Ihr Passwort nach der ersten anmeldung.\n Anmeldedaten: "
+                + "\n E-Mail: " + userAccountRequest.getEmail()
+                + "\n Passwort: " + userAccountRequest.getPassword()
+                + "\n\n\n klicken Sie den Link an: "+ activationUrl + "um sich anzumelden.";
     }
 }

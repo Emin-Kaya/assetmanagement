@@ -4,10 +4,7 @@ import com.bht.assetmanagement.persistence.dto.ApplicationUserDto;
 import com.bht.assetmanagement.persistence.dto.ApplicationUserRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import static org.springframework.http.ResponseEntity.status;
 
 @RestController
 @RequestMapping("/api/v1/applicationUser")
@@ -22,7 +19,8 @@ public class ApplicationUserController {
     }
 
     @GetMapping
-    public ResponseEntity<ApplicationUserDto> getUserDetails() {
-        return status(HttpStatus.CREATED).body(applicationUserService.getProfileInformation());
+    @ResponseStatus(HttpStatus.OK)
+    public ApplicationUserDto getUserDetails() {
+        return applicationUserService.getProfileInformation();
     }
 }

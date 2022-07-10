@@ -8,6 +8,7 @@
     <include file="db/changelog/v0.2_changelog.xml"/>
     <include file="db/changelog/v0.3_changelog.xml"/>
     <include file="db/changelog/v0.4_changelog.xml"/>
+    <include file="db/changelog/v0.5_changelog.xml"/>
     <changeSet id="1656618324791-1" author="ekaya">
         <createTable tableName="address">
             <column name="id" type="UUID">

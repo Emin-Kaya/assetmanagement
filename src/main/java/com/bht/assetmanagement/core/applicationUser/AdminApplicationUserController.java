@@ -20,7 +20,7 @@ public class AdminApplicationUserController {
     @Transactional
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUserAccount(@PathVariable String id) {
-        applicationUserService.delete(UUID.fromString(id));
+        applicationUserService.delete(id);
     }
 
     @GetMapping

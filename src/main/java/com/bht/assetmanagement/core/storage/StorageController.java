@@ -3,6 +3,7 @@ package com.bht.assetmanagement.core.storage;
 import com.bht.assetmanagement.persistence.dto.StorageDto;
 import com.bht.assetmanagement.persistence.dto.StorageRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +15,7 @@ public class StorageController {
     private final StorageService storageService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public StorageDto createStorage(@RequestBody StorageRequest storageRequest) {
         return storageService.create(storageRequest);
     }

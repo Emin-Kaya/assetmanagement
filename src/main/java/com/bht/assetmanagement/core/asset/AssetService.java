@@ -71,18 +71,21 @@ public class AssetService {
         storageService.save(storage);
     }
 
-    public void removeAssetFromUser(String assetId, String userId) {
+    public void removeAssetFromUser(String assetId, String storageId) {
         Asset asset = findAsset(assetId);
         ApplicationUser applicationUser = applicationUserService.getCurrentUser();
 
         assetUserHistoryService.update(applicationUser, asset);
-        saveAssetToStorage(asset, storageService.findStorage(userId));
+        saveAssetToStorage(asset, storageService.findStorage(storageId));
         applicationUserService.save(applicationUser);
     }
 
     public void removeAssetFromStorage(String assetId, String stroageId) {
         Asset asset = findAsset(assetId);
         Storage storage = storageService.findStorage(stroageId);
+        if (!storage.getAssets().contains(asset)) {
+            throw new EntryNotFoundException("Asset with id: " + assetId + " does not exists in storage.");
+        }
         storage.getAssets().remove(asset);
         storageService.save(storage);
     }

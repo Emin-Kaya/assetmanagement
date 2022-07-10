@@ -17,6 +17,8 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, String
 
     Boolean existsByUsername(String username);
 
+    Boolean existsByEmail(String email);
+
     Optional<UserAccount> findById(UUID id);
 
     void deleteById(UUID id);
