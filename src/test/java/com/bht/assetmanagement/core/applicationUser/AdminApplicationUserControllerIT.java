@@ -3,7 +3,6 @@ package com.bht.assetmanagement.core.applicationUser;
 import com.bht.assetmanagement.IntegrationTestSetup;
 import com.bht.assetmanagement.persistence.entity.ApplicationUser;
 import com.bht.assetmanagement.persistence.repository.ApplicationUserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -21,7 +20,7 @@ public class AdminApplicationUserControllerIT extends IntegrationTestSetup {
 
     @Test
     void deleteUserAccountTest() throws Exception {
-        ApplicationUser employee = aValidEmployeeApplicationUser();
+        ApplicationUser employee = testDataBuilder.aValidEmployeeApplicationUser();
         long beforeCount = applicationUserRepository.count();
 
         this.mockMvc.perform(MockMvcRequestBuilders

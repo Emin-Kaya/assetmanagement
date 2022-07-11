@@ -5,12 +5,14 @@ import com.bht.assetmanagement.persistence.entity.*;
 import com.bht.assetmanagement.persistence.repository.*;
 import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.*;
 import java.util.UUID;
 
 
-public abstract class TestDataBuilder {
+@Service
+public class TestDataBuilder {
 
     @Autowired
     private UserAccountRepository userAccountRepository;

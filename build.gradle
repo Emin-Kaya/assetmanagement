@@ -35,6 +35,10 @@ dependencies {
 
 	implementation("org.liquibase:liquibase-core:4.8.0")
 	implementation 'junit:junit:4.13.1'
+	testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.17.3'
+	implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.0'
+
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'

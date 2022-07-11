@@ -33,8 +33,8 @@ public class EmployeeAssetControllerIT extends IntegrationTestSetup {
 
     @Test
     void getAllEmployeeAssetsTest() throws Exception {
-        ApplicationUser applicationUser = aValidEmployeeApplicationUser();
-        Asset asset = aValidAsset();
+        ApplicationUser applicationUser = testDataBuilder.aValidEmployeeApplicationUser();
+        Asset asset = testDataBuilder.aValidAsset();
 
         assetService.saveAssetToApplicationUser(asset, applicationUser);
 
@@ -48,11 +48,11 @@ public class EmployeeAssetControllerIT extends IntegrationTestSetup {
 
     @Test
     void removeAssetFromUserTest() throws Exception {
-        ApplicationUser applicationUser = aValidEmployeeApplicationUser();
-        Asset asset = aValidAsset();
+        ApplicationUser applicationUser = testDataBuilder.aValidEmployeeApplicationUser();
+        Asset asset = testDataBuilder.aValidAsset();
         assetService.saveAssetToApplicationUser(asset, applicationUser);
 
-        Storage storage = aValidStorage();
+        Storage storage = testDataBuilder.aValidStorage();
 
 
         this.mockMvc.perform(MockMvcRequestBuilders
@@ -66,10 +66,10 @@ public class EmployeeAssetControllerIT extends IntegrationTestSetup {
 
     @Test
     void canNotRemoveAssetFromUserTest() throws Exception {
-        ApplicationUser applicationUser = aValidEmployeeApplicationUser();
-        Asset asset = aValidAsset();
+        ApplicationUser applicationUser = testDataBuilder.aValidEmployeeApplicationUser();
+        Asset asset = testDataBuilder.aValidAsset();
 
-        Storage storage = aValidStorage();
+        Storage storage = testDataBuilder.aValidStorage();
 
 
         this.mockMvc.perform(MockMvcRequestBuilders
@@ -82,8 +82,8 @@ public class EmployeeAssetControllerIT extends IntegrationTestSetup {
 
     @Test
     void canNotRemoveInvalidAssetFromUserTest() throws Exception {
-        ApplicationUser applicationUser = aValidEmployeeApplicationUser();
-        Storage storage = aValidStorage();
+        ApplicationUser applicationUser = testDataBuilder.aValidEmployeeApplicationUser();
+        Storage storage = testDataBuilder.aValidStorage();
         Asset asset = new Asset();
         asset.setId(UUID.randomUUID());
         asset.setName("invalidAssetName");
@@ -101,8 +101,8 @@ public class EmployeeAssetControllerIT extends IntegrationTestSetup {
 
     @Test
     void canNotRemoveAssetFromUserAndSaveIntoInvalidAssetTest() throws Exception {
-        ApplicationUser applicationUser = aValidEmployeeApplicationUser();
-        Asset asset = aValidAsset();
+        ApplicationUser applicationUser = testDataBuilder.aValidEmployeeApplicationUser();
+        Asset asset = testDataBuilder.aValidAsset();
         Storage storage = new Storage();
         storage.setId(UUID.randomUUID());
         storage.setName("invalidStorage");

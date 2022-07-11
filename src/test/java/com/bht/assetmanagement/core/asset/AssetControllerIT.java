@@ -41,7 +41,7 @@ public class AssetControllerIT extends IntegrationTestSetup {
         this.mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/v1/asset")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getRequestBody(aValidAssetRequest()))
+                        .content(getRequestBody(testDataBuilder.aValidAssetRequest()))
                         .with(getAuthentication("MANAGER")))
                 .andExpect(MockMvcResultMatchers
                         .status()
@@ -79,8 +79,8 @@ public class AssetControllerIT extends IntegrationTestSetup {
 
     @Test
     void removeAssetFromStorageTest() throws Exception {
-        Storage storage = aValidStorage();
-        Asset asset = aValidAsset();
+        Storage storage = testDataBuilder.aValidStorage();
+        Asset asset = testDataBuilder.aValidAsset();
         assetService.saveAssetToStorage(asset, storage);
 
         this.mockMvc.perform(MockMvcRequestBuilders
@@ -93,8 +93,8 @@ public class AssetControllerIT extends IntegrationTestSetup {
 
     @Test
     void canNotRemoveAssetFromStorageTest() throws Exception {
-        Storage storage = aValidStorage();
-        Asset asset = aValidAsset();
+        Storage storage = testDataBuilder.aValidStorage();
+        Asset asset = testDataBuilder.aValidAsset();
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .put("/api/v1/asset/{assetId}", asset.getId())
@@ -106,7 +106,7 @@ public class AssetControllerIT extends IntegrationTestSetup {
 
     @Test
     void canNotRemoveInvalidAssetFromStorageTest() throws Exception {
-        Storage storage = aValidStorage();
+        Storage storage = testDataBuilder.aValidStorage();
         Asset asset = new Asset();
         asset.setId(UUID.randomUUID());
         asset.setName("invalidAssetName");
@@ -122,7 +122,7 @@ public class AssetControllerIT extends IntegrationTestSetup {
 
     @Test
     void canNotRemoveAssetFromInvalidStorageTest() throws Exception {
-        Asset asset = aValidAsset();
+        Asset asset = testDataBuilder.aValidAsset();
         Storage storage = new Storage();
         storage.setId(UUID.randomUUID());
         storage.setName("invalidStorage");

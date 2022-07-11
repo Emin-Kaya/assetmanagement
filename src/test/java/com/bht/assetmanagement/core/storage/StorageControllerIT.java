@@ -35,7 +35,7 @@ public class StorageControllerIT extends IntegrationTestSetup {
         this.mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/v1/storage")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getRequestBody(aValidStorageRequest()))
+                        .content(getRequestBody(testDataBuilder.aValidStorageRequest()))
                         .with(getAuthentication("MANAGER")))
                 .andExpect(MockMvcResultMatchers
                         .status()
@@ -46,13 +46,13 @@ public class StorageControllerIT extends IntegrationTestSetup {
 
     @Test
     void canNotCreateDuplicateStorageTest() throws Exception {
-        aValidStorage();
+        testDataBuilder.aValidStorage();
         long beforeCount = storageRepository.count();
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/v1/storage")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getRequestBody(aValidStorageRequest()))
+                        .content(getRequestBody(testDataBuilder.aValidStorageRequest()))
                         .with(getAuthentication("MANAGER")))
                 .andExpect(MockMvcResultMatchers
                         .status()
@@ -64,7 +64,7 @@ public class StorageControllerIT extends IntegrationTestSetup {
 
     @Test
     void getAllStoragesTest() throws Exception {
-        aValidStorage();
+        testDataBuilder.aValidStorage();
         this.mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/v1/storage")
                         .with(getAuthentication("MANAGER")))
