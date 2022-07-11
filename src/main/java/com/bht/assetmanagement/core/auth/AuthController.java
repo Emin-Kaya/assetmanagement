@@ -55,7 +55,7 @@ public class AuthController {
 
     @PutMapping("/change/email")
     @ResponseStatus(HttpStatus.OK)
-    public void changeEmail(@RequestParam String email) {
-        authService.changeUserEmail(email);
+    public void changeEmail(@RequestBody EmailChangeRequest emailChangeRequest) {
+        authService.changeUserEmail(emailChangeRequest);
     }
 }

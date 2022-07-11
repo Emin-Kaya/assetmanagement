@@ -12,6 +12,7 @@ import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.entity.VerificationToken;
 import com.bht.assetmanagement.persistence.repository.UserAccountRepository;
 import com.bht.assetmanagement.shared.email.EmailUtils;
+import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -100,16 +101,19 @@ public class AuthService {
     public void changeUserPassword(PasswordChangeRequest passwordChangeRequest) {
         UserAccount userAccount = userAccountService.getProfileInformation();
         if (!passwordEncoder.matches(passwordChangeRequest.getOldPassword(), userAccount.getPassword())) {
-            throw new RuntimeException("Invalid old password");
+            throw new EntryNotFoundException("Invalid old password");
         }
         userAccount.setPassword(passwordEncoder.encode(passwordChangeRequest.getNewPassword()));
         refreshTokenService.deleteOldRefreshTokenByUsername(userAccount.getUsername());
         userAccountService.updateUserAccount(userAccount);
     }
 
-    public void changeUserEmail(String email) {
+    public void changeUserEmail(EmailChangeRequest emailChangeRequest) {
         UserAccount userAccount = userAccountService.getCurrenUser();
-        userAccount.setEmail(email);
+        if (!emailChangeRequest.getOldEmail().equals(userAccount.getEmail())) {
+            throw new EntryNotFoundException("Invalid old email");
+        }
+        userAccount.setEmail(emailChangeRequest.getNewEmail());
         userAccountService.updateUserAccount(userAccount);
     }
 
