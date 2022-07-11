@@ -3,6 +3,7 @@ package com.bht.assetmanagement;
 import com.bht.assetmanagement.persistence.entity.ApplicationUser;
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.repository.ApplicationUserRepository;
+import com.bht.assetmanagement.persistence.repository.AssetInquiryRepository;
 import com.bht.assetmanagement.persistence.repository.UserAccountRepository;
 import com.bht.assetmanagement.persistence.repository.VerificationTokenRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -42,15 +43,20 @@ public abstract class IntegrationTestSetup extends DependencyContainerSetup {
     @Autowired
     protected ApplicationUserRepository applicationUserRepository;
 
+
     @Autowired
     protected UserAccountRepository userAccountRepository;
 
     @Autowired
     protected TestDataBuilder testDataBuilder;
 
+    @Autowired
+    protected AssetInquiryRepository assetInquiryRepository;
+
 
     @BeforeEach
     protected void flush() {
+        assetInquiryRepository.deleteAll();
         verificationTokenRepository.deleteAll();
         applicationUserRepository.deleteAll();
         userAccountRepository.deleteAll();

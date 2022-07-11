@@ -5,6 +5,7 @@ import com.bht.assetmanagement.persistence.entity.*;
 import com.bht.assetmanagement.persistence.repository.*;
 import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.*;
@@ -31,6 +32,9 @@ public class TestDataBuilder {
 
     @Autowired
     private AssetInquiryRepository assetInquiryRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     public AddressRequest aAddressRequest() {
@@ -127,7 +131,7 @@ public class TestDataBuilder {
         userAccount.setId(UUID.randomUUID());
         userAccount.setUsername("lenamalz");
         userAccount.setEmail("lenamalz@mail.de");
-        userAccount.setPassword("12345678");
+        userAccount.setPassword(passwordEncoder.encode("12345678"));
         userAccount.setEnabled(true);
         userAccount.setRole(Role.EMPLOYEE);
 
