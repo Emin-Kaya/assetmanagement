@@ -22,8 +22,8 @@ public class AssetInquiryControllerIT extends IntegrationTestSetup {
         this.mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/v1/assetInquiry")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getRequestBody(aValidAssetInquiryRequest()))
-                        .with(getAuthentication(aValidEmployeeApplicationUser())))
+                        .content(getRequestBody(testDataBuilder.aValidAssetInquiryRequest()))
+                        .with(getAuthentication(testDataBuilder.aValidEmployeeApplicationUser())))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isCreated());

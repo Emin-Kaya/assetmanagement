@@ -23,7 +23,7 @@ public class AdminUserControllerIT extends IntegrationTestSetup {
         this.mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/v1/admin/userAccount")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getRequestBody(aValidUserAccountRequest()))
+                        .content(getRequestBody(testDataBuilder.aValidUserAccountRequest()))
                         .with(getAuthentication("ADMIN")))
                 .andExpect(MockMvcResultMatchers
                         .status()
@@ -34,7 +34,7 @@ public class AdminUserControllerIT extends IntegrationTestSetup {
 
     @Test
     void canNotCreateDublicateAssetManagerUserAccountTest() throws Exception {
-        UserAccount userAccount = aValidManagerUserAccount();
+        UserAccount userAccount = testDataBuilder.aValidManagerUserAccount();
         userAccount.setUsername("aValidUsername");
         userAccount.setEmail("aEmail@mail.de");
         userAccountRepository.save(userAccount);
@@ -43,7 +43,7 @@ public class AdminUserControllerIT extends IntegrationTestSetup {
         this.mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/v1/admin/userAccount")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getRequestBody(aValidUserAccountRequest()))
+                        .content(getRequestBody(testDataBuilder.aValidUserAccountRequest()))
                         .with(getAuthentication("ADMIN")))
                 .andExpect(MockMvcResultMatchers
                         .status()

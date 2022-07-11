@@ -22,7 +22,7 @@ public class ApplicationUserControllerIT extends IntegrationTestSetup {
         this.mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/v1/applicationUser")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getRequestBody(aValidApplicationRequest()))
+                        .content(getRequestBody(testDataBuilder.aValidApplicationRequest()))
                         .with(getAuthentication("EMPLOYEE")))
                 .andExpect(MockMvcResultMatchers
                         .status()
@@ -38,8 +38,8 @@ public class ApplicationUserControllerIT extends IntegrationTestSetup {
         this.mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/v1/applicationUser")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getRequestBody(aValidApplicationRequest()))
-                        .with(getAuthentication(aValidEmployeeApplicationUser())))
+                        .content(getRequestBody(testDataBuilder.aValidApplicationRequest()))
+                        .with(getAuthentication(testDataBuilder.aValidEmployeeApplicationUser())))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isConflict());
@@ -50,7 +50,7 @@ public class ApplicationUserControllerIT extends IntegrationTestSetup {
     void getUserDetailsTest() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/v1/applicationUser")
-                        .with(getAuthentication(aValidEmployeeApplicationUser())))
+                        .with(getAuthentication(testDataBuilder.aValidEmployeeApplicationUser())))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isOk());

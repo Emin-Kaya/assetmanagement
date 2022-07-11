@@ -36,7 +36,7 @@ public class AuthControllerIT extends IntegrationTestSetup {
         this.mockMvc.perform(MockMvcRequestBuilders
                         .post("/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(getRequestBody(aValidRegisterRequest())))
+                .content(getRequestBody(testDataBuilder.aValidRegisterRequest())))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isCreated());
@@ -46,7 +46,7 @@ public class AuthControllerIT extends IntegrationTestSetup {
 
     @Test
     void activateAccountTest() throws Exception {
-        UserAccount userAccount = aValidEmployeeUserAccount();
+        UserAccount userAccount = testDataBuilder.aValidEmployeeUserAccount();
         userAccount.setEnabled(false);
         userAccountRepository.save(userAccount);
         String token = verificationTokenService.generateVerificationToken(userAccount);
@@ -61,12 +61,12 @@ public class AuthControllerIT extends IntegrationTestSetup {
 
     @Test
     void signinTest() throws Exception{
-        UserAccount userAccount = aValidEmployeeUserAccount();
+        UserAccount userAccount = testDataBuilder.aValidEmployeeUserAccount();
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .post("/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getRequestBody(aValidEmployeeloginRequest())))
+                        .content(getRequestBody(testDataBuilder.aValidEmployeeloginRequest())))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isCreated());

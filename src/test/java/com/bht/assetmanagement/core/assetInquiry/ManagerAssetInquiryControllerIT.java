@@ -44,11 +44,11 @@ public class ManagerAssetInquiryControllerIT extends IntegrationTestSetup {
 
     @Test
     void cancelAssetInquiryTest() throws Exception {
-        AssetInquiry assetInquiry = aValidAssetInquiry();
+        AssetInquiry assetInquiry = testDataBuilder.aValidAssetInquiry();
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .put("/api/v1/manager/assetInquiry/{id}", assetInquiry.getId())
-                        .with(getAuthentication(aValidManagerApplicationUser())))
+                        .with(getAuthentication(testDataBuilder.aValidManagerApplicationUser())))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isNoContent());
@@ -62,7 +62,7 @@ public class ManagerAssetInquiryControllerIT extends IntegrationTestSetup {
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .put("/api/v1/manager/assetInquiry/{id}", assetInquiry.getId())
-                        .with(getAuthentication(aValidManagerApplicationUser())))
+                        .with(getAuthentication(testDataBuilder.aValidManagerApplicationUser())))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isNotFound());
@@ -70,11 +70,11 @@ public class ManagerAssetInquiryControllerIT extends IntegrationTestSetup {
 
     @Test
     void confirmAssetInquiryTest() throws Exception {
-        AssetInquiry assetInquiry = aValidAssetInquiry();
+        AssetInquiry assetInquiry = testDataBuilder.aValidAssetInquiry();
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .put("/api/v1/manager/assetInquiry/confirm/{id}", assetInquiry.getId())
-                        .with(getAuthentication(aValidManagerApplicationUser())))
+                        .with(getAuthentication(testDataBuilder.aValidManagerApplicationUser())))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isAccepted());
@@ -88,7 +88,7 @@ public class ManagerAssetInquiryControllerIT extends IntegrationTestSetup {
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .put("/api/v1/manager/assetInquiry/confirm/{id}", assetInquiry.getId())
-                        .with(getAuthentication(aValidManagerApplicationUser())))
+                        .with(getAuthentication(testDataBuilder.aValidManagerApplicationUser())))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isNotFound());
@@ -96,16 +96,16 @@ public class ManagerAssetInquiryControllerIT extends IntegrationTestSetup {
 
     @Test
     void handleAssetInquriyInStorageTest() throws Exception {
-        Asset asset = aValidAsset();
-        Storage storage = aValidStorage();
+        Asset asset = testDataBuilder.aValidAsset();
+        Storage storage = testDataBuilder.aValidStorage();
         storage.getAssets().add(asset);
         storageRepository.save(storage);
 
-        AssetInquiry assetInquiry = aValidAssetInquiry();
+        AssetInquiry assetInquiry = testDataBuilder.aValidAssetInquiry();
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .put("/api/v1/manager/assetInquiry/confirm/handle/{assetInquiryId}", assetInquiry.getId())
-                        .with(getAuthentication(aValidManagerApplicationUser())).param("storageId", storage.getId().toString()))
+                        .with(getAuthentication(testDataBuilder.aValidManagerApplicationUser())).param("storageId", storage.getId().toString()))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isAccepted());
@@ -113,17 +113,17 @@ public class ManagerAssetInquiryControllerIT extends IntegrationTestSetup {
 
     @Test
     void canNotHandleInvalidAssetInquriyInStorageTest() throws Exception {
-        Asset asset = aValidAsset();
-        Storage storage = aValidStorage();
+        Asset asset = testDataBuilder.aValidAsset();
+        Storage storage = testDataBuilder.aValidStorage();
         storage.getAssets().add(asset);
         storageRepository.save(storage);
 
-        AssetInquiry assetInquiry = aValidAssetInquiry();
+        AssetInquiry assetInquiry = testDataBuilder.aValidAssetInquiry();
         assetInquiry.setId(UUID.randomUUID());
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .put("/api/v1/manager/assetInquiry/confirm/handle/{assetInquiryId}", assetInquiry.getId())
-                        .with(getAuthentication(aValidManagerApplicationUser())).param("storageId", storage.getId().toString()))
+                        .with(getAuthentication(testDataBuilder.aValidManagerApplicationUser())).param("storageId", storage.getId().toString()))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isNotFound());
@@ -131,17 +131,17 @@ public class ManagerAssetInquiryControllerIT extends IntegrationTestSetup {
 
     @Test
     void canNotHandleAssetInquriyInInvalidStorageTest() throws Exception {
-        Asset asset = aValidAsset();
-        Storage storage = aValidStorage();
+        Asset asset = testDataBuilder.aValidAsset();
+        Storage storage = testDataBuilder.aValidStorage();
         storage.setId(UUID.randomUUID());
         storage.getAssets().add(asset);
         storageRepository.save(storage);
 
-        AssetInquiry assetInquiry = aValidAssetInquiry();
+        AssetInquiry assetInquiry = testDataBuilder.aValidAssetInquiry();
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .put("/api/v1/manager/assetInquiry/confirm/handle/{assetInquiryId}", assetInquiry.getId())
-                        .with(getAuthentication(aValidManagerApplicationUser())).param("storageId", storage.getId().toString()))
+                        .with(getAuthentication(testDataBuilder.aValidManagerApplicationUser())).param("storageId", storage.getId().toString()))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isNotFound());
