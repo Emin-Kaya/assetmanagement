@@ -22,9 +22,9 @@ public class Storage {
     @GeneratedValue(generator = "UUID")
     private UUID id;
 
-    private java.lang.String name;
+    private String name;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Asset> assets = new ArrayList<>();
 }
 

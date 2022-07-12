@@ -24,7 +24,7 @@ public class AssetController {
     public @ResponseBody
     List<AssetDto> getAllAssets() {
         return assetService.getAll();
-    }
+    } //TODO which not rented
 
 
     @PutMapping("/{assetId}")
