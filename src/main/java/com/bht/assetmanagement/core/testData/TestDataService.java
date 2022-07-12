@@ -128,7 +128,7 @@ public class TestDataService {
 
         UserAccount userAccount = new UserAccount();
         userAccount.setEmail("admin@myassets.de");
-        userAccount.setUsername("Admin");
+        userAccount.setUsername("admin");
         userAccount.setPassword(passwordEncoder.encode("12345678"));
         userAccount.setRole(Role.ADMIN);
         userAccount.setEnabled(true);
