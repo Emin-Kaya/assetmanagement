@@ -29,13 +29,13 @@ public class TestDataService {
 
     public void resetAll() {
         logger.info("Start reseting data");
+        verificationTokenRepository.deleteAll();
         assetUserHistoryRepository.deleteAll();
         storageRepository.deleteAll();
         assetInquiryRepository.deleteAll();
         addressRepository.deleteAll();
         applicationUserRepository.deleteAll();
         assetRepository.deleteAll();
-        verificationTokenRepository.deleteAll();
         userAccountRepository.deleteAll();
 
         initializeTestData();

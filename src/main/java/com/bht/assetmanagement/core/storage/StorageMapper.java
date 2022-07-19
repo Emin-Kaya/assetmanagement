@@ -1,6 +1,7 @@
 package com.bht.assetmanagement.core.storage;
 
 import com.bht.assetmanagement.persistence.dto.StorageDto;
+import com.bht.assetmanagement.persistence.dto.StorageEmployeeDto;
 import com.bht.assetmanagement.persistence.entity.Storage;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,6 +13,8 @@ public interface StorageMapper {
 
     @Mapping(source = "assets", target = "assetDtos")
     StorageDto mapEntityToStorageDto(Storage storage);
+
+    StorageEmployeeDto mapEntityToStorageEmployeeDto(Storage storage);
 
     Storage mapStoragRequestToEntity(String name);
 }

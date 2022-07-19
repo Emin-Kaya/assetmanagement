@@ -1,6 +1,7 @@
 package com.bht.assetmanagement.core.storage;
 
 import com.bht.assetmanagement.persistence.dto.StorageDto;
+import com.bht.assetmanagement.persistence.dto.StorageEmployeeDto;
 import com.bht.assetmanagement.persistence.dto.StorageRequest;
 import com.bht.assetmanagement.persistence.entity.Storage;
 import com.bht.assetmanagement.persistence.repository.StorageRepository;
@@ -22,6 +23,10 @@ public class StorageService {
 
     public List<StorageDto> getAll() {
         return storageRepository.findAll().stream().map(StorageMapper.INSTANCE::mapEntityToStorageDto).collect(Collectors.toList());
+    }
+
+    public List<StorageEmployeeDto> getAllStorages() {
+        return storageRepository.findAll().stream().map(StorageMapper.INSTANCE::mapEntityToStorageEmployeeDto).collect(Collectors.toList());
     }
 
     public void save(Storage storage) {
