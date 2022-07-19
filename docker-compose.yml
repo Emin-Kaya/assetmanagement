@@ -11,3 +11,29 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     ports:
       - "15432:5432"
+
+  backend:
+    build:
+      context: .
+      dockerfile: local.Dockerfile
+    container_name: asset_management_backend
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,testdata
+      - DB_HOST=db
+      - DB_PORT=15432
+      - DB_NAME=backend
+      - DB_USERNAME=username
+      - DB_PASSWORD=password
+      - PORT=8080
+    depends_on:
+      - db
+    links:
+      - db
+
+networks:
+  default:
+    name: development_network
+

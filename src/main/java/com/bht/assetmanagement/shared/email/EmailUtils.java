@@ -1,7 +1,7 @@
 package com.bht.assetmanagement.shared.email;
 
-import com.bht.assetmanagement.persistence.dto.UserAccountDto;
 import com.bht.assetmanagement.persistence.dto.UserAccountRequest;
+import com.bht.assetmanagement.persistence.entity.Asset;
 import com.bht.assetmanagement.persistence.entity.AssetInquiry;
 import com.bht.assetmanagement.persistence.entity.Storage;
 import org.springframework.stereotype.Service;
@@ -12,40 +12,40 @@ import java.net.URL;
 @Service
 public class EmailUtils {
 
-    public String getSubjectActivationText(){
-       return "Aktivierungslink";
+    public String getSubjectActivationText() {
+        return "Aktivierungslink";
     }
 
     public String getBodyActivationText(String token) throws MalformedURLException {
         URL activationUrl = new URL("http://localhost:8080/auth/activate/account/" + token);
-       return  "Please click on the below url to activate your account: " + activationUrl;
+        return "Please click on the below url to activate your account: " + activationUrl;
     }
 
-    public String getSubjectIsEnabledText(){
+    public String getSubjectIsEnabledText() {
         return "Der Status Ihrer Asset Anfrage hat sich geändert.";
     }
 
-    public String getBodyEnabledText(){
+    public String getBodyEnabledText() {
         return "Der Status Ihrer Asset Anfrage hat sich geändert. Ihre Anfrage wurde angenommen.";
     }
 
-    public String getBodyDisabledText(){
+    public String getBodyDisabledText() {
         return "Der Status Ihrer Asset Anfrage hat sich geändert. Leider musste Ihre Anfrage abgelehnt werden";
     }
 
-    public String getSubjectNewAssetInquiryText(){
+    public String getSubjectNewAssetInquiryText() {
         return "Neue AssetAnfrage";
     }
 
-    public String getBodyNewAssetInquiryText(){
-       return  "Sie haben eine neue Asset Anfrage erhalten.";
+    public String getBodyNewAssetInquiryText() {
+        return "Sie haben eine neue Asset Anfrage erhalten.";
     }
 
-    public String getSubjectOrderNotificationText(){
-        return  "Asset Anfrage Erinnerung";
+    public String getSubjectOrderNotificationText() {
+        return "Asset Anfrage Erinnerung";
     }
 
-    public String getBodyOrderNotificationText(AssetInquiry assetInquiry){
+    public String getBodyOrderNotificationText(AssetInquiry assetInquiry) {
         return "Sie haben eine Asset Anfrage für den Mitarbeiter:\n "
                 + assetInquiry.getOwner().getFirstName()
                 + " "
@@ -61,8 +61,8 @@ public class EmailUtils {
                 + "\n zu schicken.";
     }
 
-    public String getBodyOrderAndStorageRemoveNotificationText(AssetInquiry assetInquiry, Storage storage){
-       return  "Sie haben eine Asset Anfrage für den Mitarbeiter:\n "
+    public String getBodyOrderAndStorageRemoveNotificationText(AssetInquiry assetInquiry, Storage storage) {
+        return "Sie haben eine Asset Anfrage für den Mitarbeiter:\n "
                 + assetInquiry.getOwner().getFirstName()
                 + " "
                 + assetInquiry.getOwner().getLastName()
@@ -79,7 +79,7 @@ public class EmailUtils {
                 + "\n zu schicken.";
     }
 
-    public String getSubjectNewUserAccount(){
+    public String getSubjectNewUserAccount() {
         return "Neuer User Account";
     }
 
@@ -89,6 +89,17 @@ public class EmailUtils {
         return "Es wurde für Sie ein neuer User Account für MyAssets erstellt. Bitte ändern Sie Ihr Passwort nach der ersten anmeldung.\n Anmeldedaten: "
                 + "\n E-Mail: " + userAccountRequest.getEmail()
                 + "\n Passwort: " + userAccountRequest.getPassword()
-                + "\n\n\n klicken Sie den Link an: "+ activationUrl + "um sich anzumelden.";
+                + "\n\n\n klicken Sie den Link an: " + activationUrl + "um sich anzumelden.";
+    }
+
+    public String getSubjectRomeveAsset() {
+        return "Asset Rückgabe";
+    }
+
+    public String getBodyRemoveAsset(Asset asset, Storage storage) {
+        return "Vergessen Sie nicht ihr Asset: \n"
+                + asset.getName() + "\n in das Storage: \n"
+                + storage.getName()
+                + "\n zu legen.";
     }
 }

@@ -3,6 +3,7 @@ package com.bht.assetmanagement;
 import com.bht.assetmanagement.persistence.dto.*;
 import com.bht.assetmanagement.persistence.entity.*;
 import com.bht.assetmanagement.persistence.repository.*;
+import lombok.RequiredArgsConstructor;
 import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;

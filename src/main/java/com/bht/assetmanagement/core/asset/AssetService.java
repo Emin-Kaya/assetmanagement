@@ -2,11 +2,13 @@ package com.bht.assetmanagement.core.asset;
 
 import com.bht.assetmanagement.core.applicationUser.ApplicationUserService;
 import com.bht.assetmanagement.core.assetUserHistory.AssetUserHistoryService;
+import com.bht.assetmanagement.core.email.EmailService;
 import com.bht.assetmanagement.core.storage.StorageService;
 import com.bht.assetmanagement.persistence.dto.AssetDto;
 import com.bht.assetmanagement.persistence.dto.AssetRequest;
 import com.bht.assetmanagement.persistence.entity.*;
 import com.bht.assetmanagement.persistence.repository.AssetRepository;
+import com.bht.assetmanagement.shared.email.EmailUtils;
 import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,8 @@ public class AssetService {
     private final ApplicationUserService applicationUserService;
     private final StorageService storageService;
     private final AssetUserHistoryService assetUserHistoryService;
+    private final EmailService emailService;
+    private final EmailUtils emailUtils;
 
     public List<AssetDto> getAllAssetsOfUser() {
         List<Asset> assetsOfApplicationUser = applicationUserService.getCurrentUser().getAssetUserHistoryList()
@@ -81,11 +85,13 @@ public class AssetService {
     }
 
     public void removeAssetFromStorage(String assetId, String stroageId) {
+        ApplicationUser applicationUser = applicationUserService.getCurrentUser();
         Asset asset = findAsset(assetId);
         Storage storage = storageService.findStorage(stroageId);
         if (!storage.getAssets().contains(asset)) {
             throw new EntryNotFoundException("Asset with id: " + assetId + " does not exists in storage.");
         }
+        emailService.sendMessage(applicationUser.getUserAccount().getEmail(), emailUtils.getSubjectRomeveAsset(), emailUtils.getBodyRemoveAsset(asset, storage));
         storage.getAssets().remove(asset);
         storageService.save(storage);
     }

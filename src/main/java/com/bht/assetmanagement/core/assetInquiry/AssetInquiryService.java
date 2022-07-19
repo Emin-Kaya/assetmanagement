@@ -56,15 +56,18 @@ public class AssetInquiryService {
 
         assetInquiry.setEntryDate(dateUtils.createLocalDate());
         assetInquiry.setStatus(NOT_DONE);
+        assetInquiry.setOwner(applicationUser);
         assetInquiry.setAddress(address);
 
         assetInquiryRepository.save(assetInquiry);
         List<UserAccount> listOfAssetManagers = userAccountService.getAllUsersByRole(Role.MANAGER);
 
-        String subject = "Neue AssetAnfrage";
-        String body = "Sie haben eine neue Asset Anfrage erhalten.";
 
-        listOfAssetManagers.forEach(it -> emailService.sendMessage(applicationUser.getUserAccount().getEmail(), it.getEmail(), subject, body));
+        listOfAssetManagers.forEach(it -> emailService.sendMessage(
+                        applicationUser.getUserAccount().getEmail(),
+                        it.getEmail(),
+                        emailUtils.getSubjectNewAssetInquiryText(),
+                        emailUtils.getBodyNewAssetInquiryText()));
 
         ApplicationUserDto applicationUserDto = ApplicationUserMapper.INSTANCE.mapEntityToApplicationUserResponse(applicationUser, applicationUser.getUserAccount().getUsername(), applicationUser.getUserAccount().getEmail());
         AssetInquiryDto assetInquiryDto = AssetInquiryMapper.INSTANCE.mapEntityToAssetInquiryDto(assetInquiry);
@@ -148,10 +151,10 @@ public class AssetInquiryService {
                 ApplicationUserDto applicationUserDto = ApplicationUserMapper.INSTANCE.mapEntityToApplicationUserResponse(assetInquiry.getOwner(),
                         assetInquiry.getOwner().getUserAccount().getUsername(),
                         assetInquiry.getOwner().getUserAccount().getEmail());
+
                 assetInquiryDto = AssetInquiryMapper.INSTANCE.mapEntityToAssetInquiryDto(assetInquiry);
                 assetInquiryDto.setOwner(applicationUserDto);
-                assetInquiryDto.setAssetName(assetInquiry.getAssetName());
-                assetInquiryDto.setAssetCategory(assetInquiry.getAssetCategory());
+
                 assetInquiryDtoList.add(assetInquiryDto);
             }
         }
