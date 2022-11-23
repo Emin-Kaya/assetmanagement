@@ -7,7 +7,7 @@ TODO
 ### Local Machine Setup
 #### Prerequisites
 
-- JDK >= 17 installed
+- JDK >= 11 installed
 - docker installed
 
 ---

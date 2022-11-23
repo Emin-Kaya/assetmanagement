@@ -4,12 +4,9 @@ import com.bht.assetmanagement.persistence.dto.AssetInquiryDto;
 import com.bht.assetmanagement.persistence.dto.AssetInquiryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static org.springframework.http.ResponseEntity.status;
 
 @RestController
 @RequestMapping("/api/v1/manager/assetInquiry")
@@ -23,13 +20,13 @@ public class ManagerAssetInquiryController {
         assetInquiryService.cancel(id);
     }
 
-    @PutMapping("/confirm/{id}")
+    @PutMapping("/confirm/{id}") //TODO URL Ändern zuerst id dann funktion
     @ResponseStatus(HttpStatus.ACCEPTED)
     public AssetInquiryResponse confirmAssetInquiry(@PathVariable String id) {
         return assetInquiryService.confirm(id);
     }
 
-    @PutMapping("/confirm/handle/{assetInquiryId}")
+    @PutMapping("/confirm/handle/{assetInquiryId}") //TODO URL Ändern zuerst id dann funktion
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void handleAssetInquriyInStorage(@PathVariable String assetInquiryId, @RequestParam String storageId) {
         assetInquiryService.handleInStorage(storageId, assetInquiryId);
