@@ -4,16 +4,12 @@ import com.bht.assetmanagement.persistence.dto.*;
 import com.bht.assetmanagement.persistence.entity.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.net.MalformedURLException;
 
-import static org.springframework.http.ResponseEntity.status;
-
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -33,7 +29,7 @@ public class AuthController {
 
     @PostMapping("/signin")
     public AuthenticationResponse signIn(@RequestBody LoginRequest loginRequest) {
-       return authService.signIn(loginRequest);
+        return authService.signIn(loginRequest);
     }
 
     @PostMapping("/refresh/token")
