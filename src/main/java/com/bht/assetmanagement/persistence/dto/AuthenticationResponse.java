@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class AuthenticationResponse {
     private String authenticationToken; //jwtToken
-    private String username;
+    private String username; //TODO delete
     private String refreshToken;
     private LocalDateTime expiresAt;
 }

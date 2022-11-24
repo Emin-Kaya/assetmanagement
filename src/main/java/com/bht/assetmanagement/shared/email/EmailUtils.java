@@ -17,7 +17,7 @@ public class EmailUtils {
     }
 
     public String getBodyActivationText(String token) throws MalformedURLException {
-        URL activationUrl = new URL("http://localhost:8080/auth/activate/account/" + token);
+        URL activationUrl = new URL("http://localhost:8080/api/v1/auth/activate/account/" + token);
         return "Please click on the below url to activate your account: " + activationUrl;
     }
 
