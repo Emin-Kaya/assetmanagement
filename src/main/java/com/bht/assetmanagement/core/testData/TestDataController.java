@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Profile("testdata")
 @RestController
-@RequestMapping("/api/testdata")
+@RequestMapping("/api/v1/testdata")
 @RequiredArgsConstructor
 public class TestDataController {
     private final TestDataService testDataService;
