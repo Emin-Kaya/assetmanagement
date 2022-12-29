@@ -5,14 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class AssetDto {
     private String id;
+    private String serialnumber;
     private String name;
+    private String memory;
+    private String notes;
+    private boolean enable;
     private String category;
 }

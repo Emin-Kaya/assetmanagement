@@ -1,5 +1,6 @@
 package com.bht.assetmanagement.core.userAccount;
 
+import com.bht.assetmanagement.persistence.dto.ProfilInformationDto;
 import com.bht.assetmanagement.persistence.dto.RegisterRequest;
 import com.bht.assetmanagement.persistence.dto.UserAccountDto;
 import com.bht.assetmanagement.persistence.dto.UserAccountRequest;
@@ -16,4 +17,6 @@ public interface UserAccountMapper {
     UserAccount mapUserAccountRequestToUserAccount(UserAccountRequest userAccountRequest);
 
     UserAccountDto mapUserAccountToUserAccountDto(UserAccount userAccount);
+
+    ProfilInformationDto mapUserAccountToProfilInformationDto(UserAccount userAccount);
 }

@@ -20,16 +20,24 @@ public class ManagerAssetInquiryController {
         assetInquiryService.cancel(id);
     }
 
-    @PutMapping("/confirm/{id}") //TODO URL Ändern zuerst id dann funktion
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public AssetInquiryResponse confirmAssetInquiry(@PathVariable String id) {
-        return assetInquiryService.confirm(id);
+    public AssetInquiryResponse getAvailableAssetsForAssetInquiry(@PathVariable String id) {
+        return assetInquiryService.availableAssetsForInquiry(id);
     }
+
+    @PutMapping("/confirm/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void confirmAssetInquriy(@PathVariable String id, @RequestParam String assetId) {
+        assetInquiryService.confirmAssetInquriy(id, assetId);
+    }
+
+
 
     @PutMapping("/confirm/handle/{assetInquiryId}") //TODO URL Ändern zuerst id dann funktion
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void handleAssetInquriyInStorage(@PathVariable String assetInquiryId, @RequestParam String storageId) {
-        assetInquiryService.handleInStorage(storageId, assetInquiryId);
+        //assetInquiryService.handleInStorage(storageId, assetInquiryId);
     }
 
     @GetMapping()

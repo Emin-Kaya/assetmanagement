@@ -69,12 +69,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers("/api/v1/applicationUser/**").permitAll()
                 .antMatchers("/api/v1/employee/asset/**").hasAnyAuthority("ROLE_EMPLOYEE", "ROLE_MANAGER")
-                .antMatchers("/api/v1/asset/**").hasAnyAuthority("ROLE_MANAGER", "ROLE_ADMIN")
+                .antMatchers("/api/v1/asset/**").permitAll()
                 .antMatchers("/api/v1/storage/**").hasAnyAuthority("ROLE_EMPLOYEE")
                 .antMatchers("/api/v1/storage/manager/**").hasAnyAuthority("ROLE_MANAGER", "ROLE_ADMIN")
                 .antMatchers("/api/v1/assetInquiry/**").hasAnyAuthority("ROLE_EMPLOYEE")
                 .antMatchers("/api/v1/manager/assetInquiry/**").hasAnyAuthority("ROLE_MANAGER", "ROLE_ADMIN")
                 .antMatchers("/api/v1/admin/userAccount/**").hasAnyAuthority("ROLE_ADMIN")
+                .antMatchers("/api/v1/manager/userAccount/**").hasAnyAuthority("ROLE_MANAGER")
                 .antMatchers("/api/v1/admin/applicationUser/**").hasAnyAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated();
         http.headers().frameOptions().sameOrigin();

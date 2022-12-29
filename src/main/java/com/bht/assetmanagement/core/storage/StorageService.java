@@ -1,16 +1,15 @@
 package com.bht.assetmanagement.core.storage;
 
 import com.bht.assetmanagement.persistence.dto.StorageDto;
-import com.bht.assetmanagement.persistence.dto.StorageEmployeeDto;
+import com.bht.assetmanagement.persistence.dto.StorageResponse;
 import com.bht.assetmanagement.persistence.dto.StorageRequest;
+import com.bht.assetmanagement.persistence.entity.Asset;
 import com.bht.assetmanagement.persistence.entity.Storage;
 import com.bht.assetmanagement.persistence.repository.StorageRepository;
 import com.bht.assetmanagement.shared.exception.DublicateEntryException;
 import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,26 +20,26 @@ import java.util.stream.Collectors;
 public class StorageService {
     private final StorageRepository storageRepository;
 
-    public List<StorageDto> getAll() {
-        return storageRepository.findAll().stream().map(StorageMapper.INSTANCE::mapEntityToStorageDto).collect(Collectors.toList());
+    public List<StorageResponse> getAll() {
+        return storageRepository.findAll().stream().map(StorageMapper.INSTANCE::mapEntityToStorageResponse).collect(Collectors.toList());
     }
 
-    public List<StorageEmployeeDto> getAllStorages() {
-        return storageRepository.findAll().stream().map(StorageMapper.INSTANCE::mapEntityToStorageEmployeeDto).collect(Collectors.toList());
+    public List<StorageDto> getAllStorages() {
+        return storageRepository.findAll().stream().map(StorageMapper.INSTANCE::mapEntityToStorageDto).collect(Collectors.toList());
     }
 
     public void save(Storage storage) {
         storageRepository.save(storage);
     }
 
-    public StorageDto create(StorageRequest storageRequest) {
+    public StorageResponse create(StorageRequest storageRequest) {
         Storage storage = StorageMapper.INSTANCE.mapStoragRequestToEntity(storageRequest.getName());
         if (existsStorage(storageRequest.getName())) {
             throw new DublicateEntryException("This storage exists already.");
         } else {
             save(storage);
         }
-        return StorageMapper.INSTANCE.mapEntityToStorageDto(storage);
+        return StorageMapper.INSTANCE.mapEntityToStorageResponse(storage);
     }
 
     public Boolean existsStorage(String name) {
@@ -53,6 +52,27 @@ public class StorageService {
 
     public List<Storage> findAll() {
         return storageRepository.findAll();
+    }
+
+    public List<StorageDto> getAllStoragesContainsAsset(String name, String assetCategory) {
+        return findAll()
+                .stream()
+                .filter(storage -> containsAsset(storage, name, assetCategory)
+                ).map(StorageMapper.INSTANCE::mapEntityToStorageDto).collect(Collectors.toList());
+    }
+
+
+    private boolean containsAsset(Storage storage, String name, String assetCategory){
+        boolean filter = false;
+
+        for (Asset asset: storage.getAssets()) {
+            if (asset.getName().equals(name) && asset.getCategory().equals(assetCategory)) {
+                filter = true;
+                break;
+            }
+        }
+
+        return filter;
     }
 
 }

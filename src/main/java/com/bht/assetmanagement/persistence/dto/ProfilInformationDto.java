@@ -10,12 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserAccountRequest {
-    String email;
-    String username;
-    String password;
-    Role role;
-    @Builder.Default
-    Boolean enabled = true;
-    ApplicationUserRequest applicationUserRequest;
+public class ProfilInformationDto {
+    private String email;
+    private String username;
+    private Role role;
+    private ApplicationUserDto applicationUser;
 }

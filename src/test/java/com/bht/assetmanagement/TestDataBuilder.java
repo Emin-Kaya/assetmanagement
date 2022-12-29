@@ -3,13 +3,10 @@ package com.bht.assetmanagement;
 import com.bht.assetmanagement.persistence.dto.*;
 import com.bht.assetmanagement.persistence.entity.*;
 import com.bht.assetmanagement.persistence.repository.*;
-import lombok.RequiredArgsConstructor;
-import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.*;
 import java.util.UUID;
 
 
@@ -73,7 +70,7 @@ public class TestDataBuilder {
         return userAccountRepository.save(userAccount);
     }
 
-    public UserAccountRequest aValidUserAccountRequest(){
+    public UserAccountRequest aValidUserAccountRequest() {
         return UserAccountRequest.builder()
                 .email("aEmail@email.de")
                 .username("aValidUsername")
@@ -149,7 +146,7 @@ public class TestDataBuilder {
         return applicationUserRepository.save(applicationUser);
     }
 
-    public LoginRequest aValidEmployeeloginRequest(){
+    public LoginRequest aValidEmployeeloginRequest() {
         return LoginRequest.builder()
                 .username("lenamalz")
                 .password("12345678")
@@ -181,7 +178,7 @@ public class TestDataBuilder {
 
     public AssetRequest aValidAssetRequest() {
         String storageId = aValidStorage().getId().toString();
-        return new AssetRequest("iPhone 12", "Telefon", storageId);
+        return new AssetRequest("iPhone 12", "Telefon", storageId, "", "");
     }
 
     public AssetInquiryRequest aValidAssetInquiryRequest() {
@@ -210,11 +207,12 @@ public class TestDataBuilder {
         return assetInquiryRepository.save(assetInquiry);
     }
 
-    public RegisterRequest aValidRegisterRequest(){
+    public RegisterRequest aValidRegisterRequest() {
         return RegisterRequest.builder()
                 .username("username")
                 .password("password")
                 .email("username@mail.de")
+                .applicationUserRequest(aValidApplicationRequest())
                 .build();
     }
 }

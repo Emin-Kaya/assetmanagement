@@ -22,7 +22,19 @@ public class Asset {
     private UUID id;
 
     @Column(nullable = false, unique = true)
+    private String serialnumber;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column
+    private String memory;
+
+    @Column
+    private String notes;
+
+    @Column
+    private boolean enable;
 
     @Column(nullable = false)
     private String category;

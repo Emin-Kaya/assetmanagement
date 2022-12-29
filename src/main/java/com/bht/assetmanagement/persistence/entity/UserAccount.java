@@ -45,7 +45,7 @@ public class UserAccount implements UserDetails {
     @Column
     private boolean enabled;
 
-    @OneToOne(mappedBy = "userAccount")
+    @OneToOne(mappedBy = "userAccount", cascade = CascadeType.REMOVE)
     private ApplicationUser applicationUser;
 
     public void setRole(Role role) {

@@ -4,6 +4,7 @@ import com.bht.assetmanagement.core.applicationUser.ApplicationUserService;
 import com.bht.assetmanagement.core.assetUserHistory.AssetUserHistoryService;
 import com.bht.assetmanagement.core.email.EmailService;
 import com.bht.assetmanagement.core.storage.StorageService;
+import com.bht.assetmanagement.core.userAccount.UserAccountService;
 import com.bht.assetmanagement.persistence.dto.AssetDto;
 import com.bht.assetmanagement.persistence.dto.AssetRequest;
 import com.bht.assetmanagement.persistence.entity.*;
@@ -23,13 +24,26 @@ import java.util.stream.Collectors;
 public class AssetService {
     private final AssetRepository assetRepository;
     private final ApplicationUserService applicationUserService;
+
+    private final UserAccountService userAccountService;
     private final StorageService storageService;
     private final AssetUserHistoryService assetUserHistoryService;
     private final EmailService emailService;
     private final EmailUtils emailUtils;
 
     public List<AssetDto> getAllAssetsOfUser() {
-        List<Asset> assetsOfApplicationUser = applicationUserService.getCurrentUser().getAssetUserHistoryList()
+        UserAccount userAccount = userAccountService.getCurrenUser();
+        List<Asset> assetsOfApplicationUser = applicationUserService.getApplicationUserByUserAccount(userAccount).getAssetUserHistoryList()
+                .stream()
+                .filter(it -> it.getLendStatus() == LendStatus.RENTED)
+                .map(AssetUserHistory::getAsset)
+                .collect(Collectors.toList());
+
+        return assetsOfApplicationUser.stream().map(AssetMapper.INSTANCE::mapEntityToAssetDto).collect(Collectors.toList());
+    }
+
+    public List<AssetDto> getAllAssetsOfUserByID(UUID id) {
+        List<Asset> assetsOfApplicationUser = userAccountService.getUserAccountById(id).getApplicationUser().getAssetUserHistoryList()
                 .stream()
                 .filter(it -> it.getLendStatus() == LendStatus.RENTED)
                 .map(AssetUserHistory::getAsset)
@@ -39,7 +53,28 @@ public class AssetService {
     }
 
     public List<AssetDto> getAll() {
-        return assetRepository.findAll().stream().map(AssetMapper.INSTANCE::mapEntityToAssetDto).collect(Collectors.toList());
+        return assetRepository
+                .findAll()
+                .stream()
+                .map(AssetMapper.INSTANCE::mapEntityToAssetDto).collect(Collectors.toList());
+    }
+
+    public List<AssetDto> getFreeAssets() {
+        return assetRepository
+                .findAll()
+                .stream()
+                .filter(it -> !it.isEnable())
+                .map(AssetMapper.INSTANCE::mapEntityToAssetDto).collect(Collectors.toList());
+    }
+
+    public List<AssetDto> getFreeAssetsByAttributes(String assetName, String assetCategory) {
+        return assetRepository
+                .findAll()
+                .stream()
+                .filter(it -> it.isEnable())
+                .filter(it -> it.getName().equals(assetName))
+                .filter(it -> it.getCategory().equals(assetCategory))
+                .map(AssetMapper.INSTANCE::mapEntityToAssetDto).collect(Collectors.toList());
     }
 
     public Asset create(AssetRequest assetRequest) {
@@ -59,11 +94,15 @@ public class AssetService {
         saveAssetToStorage(asset, storageService.findStorage(assetRequest.getStorageId()));
     }
 
-    public void saveAssetToApplicationUser(Asset asset, ApplicationUser applicationUser) {
-        if (!applicationUserService.existsUser(applicationUser.getId())) {
-            throw new EntryNotFoundException("Application user with id: " + applicationUser.getId() + " does not exist.");
-        }
+    public void saveAssetToApplicationUser(String assetId, String applicationUserId) {
+        ApplicationUser applicationUser = applicationUserService.existsUser(applicationUserId);
+        Asset asset = findAsset(assetId);
+
         applicationUser.getAssetUserHistoryList().add(assetUserHistoryService.create(applicationUser, asset));
+
+        asset.setEnable(false);
+
+        assetRepository.save(asset);
         applicationUserService.save(applicationUser);
     }
 
@@ -77,7 +116,8 @@ public class AssetService {
 
     public void removeAssetFromUser(String assetId, String storageId) {
         Asset asset = findAsset(assetId);
-        ApplicationUser applicationUser = applicationUserService.getCurrentUser();
+        UserAccount userAccount = userAccountService.getCurrenUser();
+        ApplicationUser applicationUser = applicationUserService.getApplicationUserByUserAccount(userAccount);
 
         assetUserHistoryService.update(applicationUser, asset);
         saveAssetToStorage(asset, storageService.findStorage(storageId));
@@ -85,7 +125,8 @@ public class AssetService {
     }
 
     public void removeAssetFromStorage(String assetId, String stroageId) {
-        ApplicationUser applicationUser = applicationUserService.getCurrentUser();
+        UserAccount userAccount = userAccountService.getCurrenUser();
+        ApplicationUser applicationUser = applicationUserService.getApplicationUserByUserAccount(userAccount);
         Asset asset = findAsset(assetId);
         Storage storage = storageService.findStorage(stroageId);
         if (!storage.getAssets().contains(asset)) {
@@ -108,14 +149,6 @@ public class AssetService {
         return asset.orElseThrow();
     }
 
-    public List<Storage> getAllStoragesContainsAsset(String assetId) {
-        Asset asset = findAsset(assetId);
-        return storageService.findAll()
-                .stream()
-                .filter(storage ->
-                        storage.getAssets().contains(asset)
-                ).collect(Collectors.toList());
-    }
 
     private Asset findAsset(String id) {
         return assetRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntryNotFoundException("Asset with id " + id + " does not exist."));

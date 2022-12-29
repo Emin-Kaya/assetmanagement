@@ -12,7 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class AssetInquiryResponse {
-    private List<StorageDto> storageDtoList;
-    private AssetInquiryDto assetInquiryDto;
+    private String id;
+    private List<AssetDto> assetDtos;
+    private List<StorageDto> storageDto;
 }
 

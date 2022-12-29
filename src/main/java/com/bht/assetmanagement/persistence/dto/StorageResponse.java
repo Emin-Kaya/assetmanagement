@@ -11,8 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class StorageEmployeeDto {
+public class StorageResponse {
     private String id;
     private String name;
+    private List<AssetDto> assetDtos;
 }
 
