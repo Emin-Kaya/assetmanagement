@@ -13,7 +13,6 @@ import java.util.List;
 @Builder
 public class AssetInquiryResponse {
     private String id;
-    private List<AssetDto> assetDtos;
-    private List<StorageDto> storageDto;
+    private List<StorageResponse> storageDto;
 }
 

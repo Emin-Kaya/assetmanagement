@@ -17,7 +17,7 @@ import java.util.UUID;
 public class AdminUserAccountController {
     private final UserAccountService userAccountService;
 
-    @DeleteMapping()
+    @PutMapping()
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
     public void deleteUserAccount(@RequestParam String id) {
@@ -25,7 +25,7 @@ public class AdminUserAccountController {
     }
 
     @GetMapping()
-    public List<UserAccountDto> getAllUserAccount() {
+    public List<UserAccountDto> getAllUserAccounts() {
         return userAccountService.getAll();
     }
 

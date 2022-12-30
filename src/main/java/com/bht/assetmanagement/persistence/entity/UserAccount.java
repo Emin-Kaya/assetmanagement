@@ -45,6 +45,9 @@ public class UserAccount implements UserDetails {
     @Column
     private boolean enabled;
 
+    @Column
+    private boolean isArchived = false;
+
     @OneToOne(mappedBy = "userAccount", cascade = CascadeType.REMOVE)
     private ApplicationUser applicationUser;
 

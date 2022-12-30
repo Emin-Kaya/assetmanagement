@@ -20,6 +20,12 @@ public class ManagerStorageController {
         return storageService.create(storageRequest);
     }
 
+    @DeleteMapping()
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void deleteStorafe(@RequestParam String id) {
+        storageService.delete(id);
+    }
+
     @GetMapping
     public List<StorageResponse> getAllStorages() {
         return storageService.getAll();

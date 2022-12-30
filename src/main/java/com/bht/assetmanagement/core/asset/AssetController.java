@@ -19,11 +19,9 @@ public class AssetController {
         return assetService.getAllAssetsOfUser();
     }
 
-    @PutMapping("/{assetId}")
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeAssetFromUser(@PathVariable String assetId, @RequestParam String storageId) {
-        assetService.removeAssetFromUser(assetId, storageId);
+    public void removeAssetFromUser(@PathVariable String id, @RequestParam String storageId) {
+        assetService.removeAssetFromUser(id, storageId);
     }
-
-
 }

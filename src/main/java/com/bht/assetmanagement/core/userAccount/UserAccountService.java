@@ -5,6 +5,7 @@ import com.bht.assetmanagement.core.email.EmailService;
 import com.bht.assetmanagement.persistence.dto.ProfilInformationDto;
 import com.bht.assetmanagement.persistence.dto.UserAccountDto;
 import com.bht.assetmanagement.persistence.dto.UserAccountRequest;
+import com.bht.assetmanagement.persistence.entity.AssetUserHistory;
 import com.bht.assetmanagement.persistence.entity.Role;
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.entity.VerificationToken;
@@ -29,6 +30,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.bht.assetmanagement.persistence.entity.LendStatus.RENTED;
+
 @Service
 @RequiredArgsConstructor
 public class UserAccountService implements UserDetailsService {
@@ -37,7 +40,6 @@ public class UserAccountService implements UserDetailsService {
     private final UserAccountRepository userAccountRepository;
     private final EmailService emailService;
     private final EmailUtils emailUtils;
-
     private final ApplicationUserService applicationUserService;
 
     @Override
@@ -102,7 +104,7 @@ public class UserAccountService implements UserDetailsService {
         return findUserByUsername(authentication.getName());
     }
 
-    public UserAccountDto getCurrentUserDto(){
+    public UserAccountDto getCurrentUserDto() {
         return UserAccountMapper.INSTANCE.mapUserAccountToUserAccountDto(getCurrenUser());
     }
 
@@ -131,8 +133,21 @@ public class UserAccountService implements UserDetailsService {
     }
 
     public void delete(UUID id) {
-        userAccountRepository.findById(id).orElseThrow(() -> new RuntimeException("UserAccount not found with id" + id));
-        userAccountRepository.deleteById(id);
+        UserAccount userAccount = getUserAccountById(id);
+        boolean hasAssets = true;
+
+        for (AssetUserHistory assetUserHistory : userAccount.getApplicationUser().getAssetUserHistoryList()) {
+            if (assetUserHistory.getLendStatus().equals(RENTED)) {
+                hasAssets = false;
+                break;
+            }
+        }
+
+        if (hasAssets) {
+            userAccount.setEnabled(false);
+            userAccount.setArchived(true);
+            userAccountRepository.save(userAccount);
+        }
     }
 
     public List<UserAccountDto> getAll() {
@@ -140,11 +155,11 @@ public class UserAccountService implements UserDetailsService {
 
         UserAccount currentUser = getCurrenUser();
 
-
         userAccountRepository.findAll()
                 .stream()
                 .filter(it -> it.getId() != currentUser.getId())
                 .filter(it -> it.getRole() != Role.ADMIN)
+                .filter(it -> !it.isArchived())
                 .collect(Collectors.toList())
                 .forEach((it -> userAccountDtos.add(UserAccountMapper.INSTANCE.mapUserAccountToUserAccountDto(it))));
 
@@ -152,7 +167,12 @@ public class UserAccountService implements UserDetailsService {
     }
 
     public UserAccount getUserAccountById(UUID id) {
-        return userAccountRepository.findById(id).orElseThrow(() -> new RuntimeException("UserAccount not found with id" + id));
+        UserAccount userAccount = userAccountRepository.findById(id).orElseThrow(() -> new RuntimeException("UserAccount not found with id" + id));
+
+        if (!userAccount.isArchived()) {
+            return userAccount;
+        } else throw new RuntimeException("UserAccount not found with id" + id);
+
     }
 
     public UserAccountDto getUserAccountDtoById(UUID id) {

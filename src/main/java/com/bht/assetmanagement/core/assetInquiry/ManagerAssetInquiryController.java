@@ -2,6 +2,7 @@ package com.bht.assetmanagement.core.assetInquiry;
 
 import com.bht.assetmanagement.persistence.dto.AssetInquiryDto;
 import com.bht.assetmanagement.persistence.dto.AssetInquiryResponse;
+import com.bht.assetmanagement.persistence.dto.AssetRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -32,12 +33,10 @@ public class ManagerAssetInquiryController {
         assetInquiryService.confirmAssetInquriy(id, assetId);
     }
 
-
-
-    @PutMapping("/confirm/handle/{assetInquiryId}") //TODO URL Ändern zuerst id dann funktion
+    @PutMapping("/confirm/order/{assetInquiryId}") //TODO URL Ändern zuerst id dann funktion
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void handleAssetInquriyInStorage(@PathVariable String assetInquiryId, @RequestParam String storageId) {
-        //assetInquiryService.handleInStorage(storageId, assetInquiryId);
+    public void orderAssetForInquiry(@PathVariable String id, @RequestBody AssetRequest assetRequest) {
+        assetInquiryService.orderAssetForInquiry(id, assetRequest);
     }
 
     @GetMapping()

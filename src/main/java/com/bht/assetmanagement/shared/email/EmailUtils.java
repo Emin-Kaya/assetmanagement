@@ -100,8 +100,20 @@ public class EmailUtils {
 
     public String getBodyRemoveAsset(Asset asset, Storage storage) {
         return "Vergessen Sie nicht ihr Asset: \n"
-                + asset.getName() + "\n in das Storage: \n"
+                + asset.getName() + " ("+ asset.getSerialnumber() + ")\n in das Storage: \n"
                 + storage.getName()
                 + "\n zu legen.";
     }
+
+    public String getSubjectNotificationRomeveAsset() {
+        return "Asset Rückgabe";
+    }
+
+    public String getBodyNotificationRemoveAsset(Asset asset, Storage storage) {
+        return "Das Asset: \n"
+                + asset.getName() + " ("+ asset.getSerialnumber() + ")\n wurde in das Storage: \n"
+                + storage.getName()
+                + "\n zurück gelegt.";
+    }
+
 }

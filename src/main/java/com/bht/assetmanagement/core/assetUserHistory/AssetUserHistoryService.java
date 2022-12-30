@@ -10,6 +10,8 @@ import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import static com.bht.assetmanagement.persistence.entity.LendStatus.RENTED;
+
 @Service
 @RequiredArgsConstructor
 public class AssetUserHistoryService {
@@ -21,7 +23,7 @@ public class AssetUserHistoryService {
 
         AssetUserHistory assetUserHistory = new AssetUserHistory();
         assetUserHistory.setApplicationUser(applicationUser);
-        assetUserHistory.setLendStatus(LendStatus.RENTED);
+        assetUserHistory.setLendStatus(RENTED);
         assetUserHistory.setAsset(asset);
         assetUserHistory.setRendDate(dateUtils.createLocalDate());
         return assetUserHistoryRepository.save(assetUserHistory);
@@ -29,7 +31,7 @@ public class AssetUserHistoryService {
 
     public AssetUserHistory update(ApplicationUser applicationUser, Asset asset) {
         AssetUserHistory assetUserHistory = assetUserHistoryRepository
-                .findByApplicationUserAndAsset(applicationUser, asset)
+                .findByApplicationUserAndAssetAndLendStatus(applicationUser, asset, RENTED)
                 .orElseThrow(() -> new EntryNotFoundException("History entry of application user with id: "
                         + applicationUser.getId() + " and asset with id: " + asset.getId() + " was not found."));
         assetUserHistory.setLendStatus(LendStatus.RETURNED);

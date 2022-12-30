@@ -21,28 +21,20 @@ public class ManagerAssetController {
         assetService.saveRequestToStorage(assetRequest);
     }
 
-
-    @PutMapping()
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void saveAssetToUser(@RequestParam String assetId, @RequestParam String auId) {
-        assetService.saveAssetToApplicationUser(assetId, auId);
+    @PutMapping("/{assetId}")
+    public void removeAssetFromStorage(@PathVariable String assetId, @RequestParam String storageId) {
+        assetService.removeAssetFromStorage(assetId, storageId);
     }
 
     @GetMapping()
     public @ResponseBody
     List<AssetDto> getAllAssets() {
         return assetService.getAll();
-    } //TODO which not rented
+    }
 
     @GetMapping("/{userId}")
     public @ResponseBody
     List<AssetDto> getAllAssetsOfUserByID(@PathVariable String userId) {
         return assetService.getAllAssetsOfUserByID(UUID.fromString(userId));
-    }
-
-
-    @PutMapping("/{assetId}")
-    public void removeAssetFromStorage(@PathVariable String assetId, @RequestParam String storageId) {
-        assetService.removeAssetFromStorage(assetId, storageId);
     }
 }

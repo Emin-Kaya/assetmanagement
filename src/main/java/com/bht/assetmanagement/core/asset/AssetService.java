@@ -116,39 +116,40 @@ public class AssetService {
 
     public void removeAssetFromUser(String assetId, String storageId) {
         Asset asset = findAsset(assetId);
-        UserAccount userAccount = userAccountService.getCurrenUser();
-        ApplicationUser applicationUser = applicationUserService.getApplicationUserByUserAccount(userAccount);
-
+        Storage storage = storageService.findStorage(storageId);
+        ApplicationUser applicationUser = userAccountService.getCurrenUser().getApplicationUser();
         assetUserHistoryService.update(applicationUser, asset);
-        saveAssetToStorage(asset, storageService.findStorage(storageId));
+
+
+        saveAssetToStorage(asset, storage);
+        asset.setEnable(true);
+        assetRepository.save(asset);
+
+
+        emailService.sendMessage(applicationUser.getUserAccount().getEmail(), emailUtils.getSubjectRomeveAsset(), emailUtils.getBodyRemoveAsset(asset, storage));
+
+        List<UserAccount> listOfAssetManagers = userAccountService.getAllUsersByRole(Role.MANAGER);
+
+
+        listOfAssetManagers.forEach(it -> emailService.sendMessage(
+                applicationUser.getUserAccount().getEmail(),
+                it.getEmail(),
+                emailUtils.getSubjectNotificationRomeveAsset(),
+                emailUtils.getBodyNotificationRemoveAsset(asset, storage)));
+
+
         applicationUserService.save(applicationUser);
     }
 
     public void removeAssetFromStorage(String assetId, String stroageId) {
-        UserAccount userAccount = userAccountService.getCurrenUser();
-        ApplicationUser applicationUser = applicationUserService.getApplicationUserByUserAccount(userAccount);
         Asset asset = findAsset(assetId);
         Storage storage = storageService.findStorage(stroageId);
         if (!storage.getAssets().contains(asset)) {
             throw new EntryNotFoundException("Asset with id: " + assetId + " does not exists in storage.");
         }
-        emailService.sendMessage(applicationUser.getUserAccount().getEmail(), emailUtils.getSubjectRomeveAsset(), emailUtils.getBodyRemoveAsset(asset, storage));
         storage.getAssets().remove(asset);
         storageService.save(storage);
     }
-
-    public Asset getAssetFromAssetInquiry(AssetInquiry assetInquiry) {
-        AssetRequest assetRequest = AssetRequest.builder()
-                .name(assetInquiry.getAssetName())
-                .category(assetInquiry.getAssetCategory()).build();
-
-        Optional<Asset> asset = getAsset(assetRequest);
-        if (getAsset(assetRequest).isEmpty()) {
-            asset = Optional.ofNullable(create(assetRequest));
-        }
-        return asset.orElseThrow();
-    }
-
 
     private Asset findAsset(String id) {
         return assetRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntryNotFoundException("Asset with id " + id + " does not exist."));
