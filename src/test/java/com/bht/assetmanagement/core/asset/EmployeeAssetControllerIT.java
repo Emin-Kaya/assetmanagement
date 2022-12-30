@@ -36,7 +36,7 @@ public class EmployeeAssetControllerIT extends IntegrationTestSetup {
         ApplicationUser applicationUser = testDataBuilder.aValidEmployeeApplicationUser();
         Asset asset = testDataBuilder.aValidAsset();
 
-        assetService.saveAssetToApplicationUser(asset, applicationUser);
+      //  assetService.saveAssetToApplicationUser(asset, applicationUser);
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/v1/employee/asset")
@@ -50,7 +50,7 @@ public class EmployeeAssetControllerIT extends IntegrationTestSetup {
     void removeAssetFromUserTest() throws Exception {
         ApplicationUser applicationUser = testDataBuilder.aValidEmployeeApplicationUser();
         Asset asset = testDataBuilder.aValidAsset();
-        assetService.saveAssetToApplicationUser(asset, applicationUser);
+      //  assetService.saveAssetToApplicationUser(asset, applicationUser);
 
         Storage storage = testDataBuilder.aValidStorage();
 

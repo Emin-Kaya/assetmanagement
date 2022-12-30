@@ -1,8 +1,11 @@
 package com.bht.assetmanagement.core.userAccount;
 
+import com.bht.assetmanagement.core.applicationUser.ApplicationUserService;
 import com.bht.assetmanagement.core.email.EmailService;
+import com.bht.assetmanagement.persistence.dto.ProfilInformationDto;
 import com.bht.assetmanagement.persistence.dto.UserAccountDto;
 import com.bht.assetmanagement.persistence.dto.UserAccountRequest;
+import com.bht.assetmanagement.persistence.entity.AssetUserHistory;
 import com.bht.assetmanagement.persistence.entity.Role;
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.entity.VerificationToken;
@@ -21,9 +24,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static com.bht.assetmanagement.persistence.entity.LendStatus.RENTED;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +40,7 @@ public class UserAccountService implements UserDetailsService {
     private final UserAccountRepository userAccountRepository;
     private final EmailService emailService;
     private final EmailUtils emailUtils;
+    private final ApplicationUserService applicationUserService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -78,7 +86,7 @@ public class UserAccountService implements UserDetailsService {
         return userAccountRepository.existsByEmail(email);
     }
 
-    public boolean existsUserAccount(String username, String email){
+    public boolean existsUserAccount(String username, String email) {
         return existsUserAccountByUserName(username) || existsUserAccountByEmail(email);
     }
 
@@ -87,31 +95,87 @@ public class UserAccountService implements UserDetailsService {
         return findUserByUsername(getCurrenUser().getUsername());
     }
 
+    public ProfilInformationDto getProfileInformationDto() {
+        return UserAccountMapper.INSTANCE.mapUserAccountToProfilInformationDto(getProfileInformation());
+    }
+
     public UserAccount getCurrenUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return findUserByUsername(authentication.getName());
+    }
+
+    public UserAccountDto getCurrentUserDto() {
+        return UserAccountMapper.INSTANCE.mapUserAccountToUserAccountDto(getCurrenUser());
     }
 
     public List<UserAccount> getAllUsersByRole(Role role) {
         return userAccountRepository.findAllByRole(role);
     }
 
-    public UserAccountDto createAssetManagerUserAccount(UserAccountRequest userAccountRequest) throws MalformedURLException {
+    public UserAccount createUserAccount(UserAccountRequest userAccountRequest) throws MalformedURLException {
 
-        if (existsUserAccount(userAccountRequest.getUsername(),userAccountRequest.getEmail()) ) {
+        if (existsUserAccount(userAccountRequest.getUsername(), userAccountRequest.getEmail())) {
             throw new DublicateEntryException("UserAccount already exists.");
         }
 
-        userAccountRequest.setPassword(passwordEncoder.encode(userAccountRequest.getPassword()));
-        UserAccount assetManagerUserAccount = UserAccountMapper.INSTANCE.mapUserAccountRequestToUserAccount(userAccountRequest);
+        String password = userAccountRequest.getPassword();
 
-        userAccountRepository.save(assetManagerUserAccount);
-        emailService.sendMessage(userAccountRequest.getEmail(), emailUtils.getSubjectNewUserAccount(), emailUtils.getBodyNewUserAccount(userAccountRequest));
-        return UserAccountMapper.INSTANCE.mapUserAccountToUserAccountDto(assetManagerUserAccount);
+        userAccountRequest.setPassword(passwordEncoder.encode(userAccountRequest.getPassword()));
+        UserAccount userAccount = UserAccountMapper.INSTANCE.mapUserAccountRequestToUserAccount(userAccountRequest);
+
+        userAccount.setEnabled(true);
+        userAccountRepository.save(userAccount);
+
+        applicationUserService.create(userAccountRequest.getApplicationUserRequest(), userAccount);
+
+        emailService.sendMessage(userAccountRequest.getEmail(), emailUtils.getSubjectNewUserAccount(), emailUtils.getBodyNewUserAccount(userAccountRequest.getEmail(), password));
+        return userAccount;
     }
 
     public void delete(UUID id) {
-        userAccountRepository.findById(id).orElseThrow(() -> new RuntimeException("UserAccount not found with id" + id));
-        userAccountRepository.deleteById(id);
+        UserAccount userAccount = getUserAccountById(id);
+        boolean hasAssets = true;
+
+        for (AssetUserHistory assetUserHistory : userAccount.getApplicationUser().getAssetUserHistoryList()) {
+            if (assetUserHistory.getLendStatus().equals(RENTED)) {
+                hasAssets = false;
+                break;
+            }
+        }
+
+        if (hasAssets) {
+            userAccount.setEnabled(false);
+            userAccount.setArchived(true);
+            userAccountRepository.save(userAccount);
+        }
+    }
+
+    public List<UserAccountDto> getAll() {
+        List<UserAccountDto> userAccountDtos = new ArrayList<>();
+
+        UserAccount currentUser = getCurrenUser();
+
+        userAccountRepository.findAll()
+                .stream()
+                .filter(it -> it.getId() != currentUser.getId())
+                .filter(it -> it.getRole() != Role.ADMIN)
+                .filter(it -> !it.isArchived())
+                .collect(Collectors.toList())
+                .forEach((it -> userAccountDtos.add(UserAccountMapper.INSTANCE.mapUserAccountToUserAccountDto(it))));
+
+        return userAccountDtos;
+    }
+
+    public UserAccount getUserAccountById(UUID id) {
+        UserAccount userAccount = userAccountRepository.findById(id).orElseThrow(() -> new RuntimeException("UserAccount not found with id" + id));
+
+        if (!userAccount.isArchived()) {
+            return userAccount;
+        } else throw new RuntimeException("UserAccount not found with id" + id);
+
+    }
+
+    public UserAccountDto getUserAccountDtoById(UUID id) {
+        return UserAccountMapper.INSTANCE.mapUserAccountToUserAccountDto(getUserAccountById(id));
     }
 }

@@ -1,6 +1,7 @@
 package com.bht.assetmanagement.core.auth;
 
 import com.bht.assetmanagement.config.security.JwtUtils;
+import com.bht.assetmanagement.core.applicationUser.ApplicationUserService;
 import com.bht.assetmanagement.core.email.EmailService;
 import com.bht.assetmanagement.core.refreshToken.RefreshTokenService;
 import com.bht.assetmanagement.core.userAccount.UserAccountMapper;
@@ -12,19 +13,21 @@ import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.entity.VerificationToken;
 import com.bht.assetmanagement.persistence.repository.UserAccountRepository;
 import com.bht.assetmanagement.shared.email.EmailUtils;
+import com.bht.assetmanagement.shared.exception.DublicateEntryException;
 import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.net.MalformedURLException;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,9 +43,11 @@ public class AuthService {
     private final EmailService emailService;
     private final EmailUtils emailUtils;
 
+    private final ApplicationUserService applicationUserService;
+
     public void signUp(RegisterRequest registerRequest, Role role) throws MalformedURLException {
-        if (userAccountService.existsUserAccount(registerRequest.getUsername(),registerRequest.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "This user account exists already.");
+        if (userAccountService.existsUserAccount(registerRequest.getUsername(), registerRequest.getEmail())) {
+            throw new DublicateEntryException("This user account exists already.");
         }
 
         registerRequest.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
@@ -51,6 +56,13 @@ public class AuthService {
         userAccount.setRole(role);
         userAccount.setEnabled(false);
         userAccountRepository.save(userAccount);
+
+        try {
+            applicationUserService.create(registerRequest.getApplicationUserRequest(), userAccount);
+        } catch (Exception e) {
+            userAccountRepository.delete(userAccount);
+            throw e;
+        }
 
         String token = verificationTokenService.generateVerificationToken(userAccount);
         emailService.sendMessage(userAccount.getEmail(), emailUtils.getSubjectActivationText(), emailUtils.getBodyActivationText(token));
@@ -78,11 +90,14 @@ public class AuthService {
                 )
         );
 
+        User user = (User) authentication.getPrincipal();
+        String role = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()).get(0);
+
         String jwtToken = jwtUtils.generateJwtToken(authentication);
 
         return AuthenticationResponse.builder()
                 .authenticationToken(jwtToken)
-                .username(loginRequest.getUsername())
+                .role(role)
                 .expiresAt(LocalDateTime.now(clock).plusSeconds(jwtUtils.getJwtExpirationMs()))
                 .refreshToken(refreshTokenService.generateRefreshToken(loginRequest.getUsername()).getToken())
                 .build();

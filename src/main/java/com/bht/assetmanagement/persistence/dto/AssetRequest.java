@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class AssetRequest {
+    private String serialnumber;
     private String name;
     private String category;
+    private String notes;
     private String storageId;
 }

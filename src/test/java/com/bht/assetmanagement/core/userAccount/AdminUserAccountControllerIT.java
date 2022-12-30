@@ -9,11 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import javax.transaction.Transactional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AdminUserControllerIT extends IntegrationTestSetup {
+public class AdminUserAccountControllerIT extends IntegrationTestSetup {
 
     @Autowired
     private UserAccountRepository userAccountRepository;

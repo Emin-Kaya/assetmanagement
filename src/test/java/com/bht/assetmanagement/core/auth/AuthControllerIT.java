@@ -47,7 +47,7 @@ public class AuthControllerIT extends IntegrationTestSetup {
         long beforeCount = userAccountRepository.count();
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post("/auth/signup")
+                        .post("/api/v1/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getRequestBody(testDataBuilder.aValidRegisterRequest())))
                 .andExpect(MockMvcResultMatchers
@@ -104,7 +104,7 @@ public class AuthControllerIT extends IntegrationTestSetup {
     void signOutTest() throws Exception {
         UserAccount userAccount = testDataBuilder.aValidEmployeeUserAccount();
         AuthenticationResponse authenticationResponse = authService.signIn(testDataBuilder.aValidEmployeeloginRequest());
-        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest(authenticationResponse.getRefreshToken(), authenticationResponse.getUsername());
+        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest(authenticationResponse.getRefreshToken(), authenticationResponse.getRole());
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .post("/auth/signout")
@@ -119,7 +119,7 @@ public class AuthControllerIT extends IntegrationTestSetup {
     void canNotsignOutTest() throws Exception {
         UserAccount userAccount = testDataBuilder.aValidEmployeeUserAccount();
         AuthenticationResponse authenticationResponse = authService.signIn(testDataBuilder.aValidEmployeeloginRequest());
-        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest("invalidRefreshtoken", authenticationResponse.getUsername());
+        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest("invalidRefreshtoken", authenticationResponse.getRole());
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .post("/auth/signout")

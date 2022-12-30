@@ -1,9 +1,9 @@
 package com.bht.assetmanagement.shared.email;
 
-import com.bht.assetmanagement.persistence.dto.UserAccountRequest;
 import com.bht.assetmanagement.persistence.entity.Asset;
 import com.bht.assetmanagement.persistence.entity.AssetInquiry;
 import com.bht.assetmanagement.persistence.entity.Storage;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
@@ -83,12 +83,14 @@ public class EmailUtils {
         return "Neuer User Account";
     }
 
-    public String getBodyNewUserAccount(UserAccountRequest userAccountRequest) throws MalformedURLException {
+    public String getBodyNewUserAccount(String email, String passwort) throws MalformedURLException {
+        final PasswordEncoder passwordEncoder;
+
         URL activationUrl = new URL("http://localhost:8080/auth/signin");
 
         return "Es wurde für Sie ein neuer User Account für MyAssets erstellt. Bitte ändern Sie Ihr Passwort nach der ersten anmeldung.\n Anmeldedaten: "
-                + "\n E-Mail: " + userAccountRequest.getEmail()
-                + "\n Passwort: " + userAccountRequest.getPassword()
+                + "\n E-Mail: " + email
+                + "\n Passwort: " + passwort
                 + "\n\n\n klicken Sie den Link an: " + activationUrl + "um sich anzumelden.";
     }
 
@@ -98,8 +100,20 @@ public class EmailUtils {
 
     public String getBodyRemoveAsset(Asset asset, Storage storage) {
         return "Vergessen Sie nicht ihr Asset: \n"
-                + asset.getName() + "\n in das Storage: \n"
+                + asset.getName() + " ("+ asset.getSerialnumber() + ")\n in das Storage: \n"
                 + storage.getName()
                 + "\n zu legen.";
     }
+
+    public String getSubjectNotificationRomeveAsset() {
+        return "Asset Rückgabe";
+    }
+
+    public String getBodyNotificationRemoveAsset(Asset asset, Storage storage) {
+        return "Das Asset: \n"
+                + asset.getName() + " ("+ asset.getSerialnumber() + ")\n wurde in das Storage: \n"
+                + storage.getName()
+                + "\n zurück gelegt.";
+    }
+
 }

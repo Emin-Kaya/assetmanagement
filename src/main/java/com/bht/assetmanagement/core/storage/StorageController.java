@@ -1,6 +1,6 @@
 package com.bht.assetmanagement.core.storage;
 
-import com.bht.assetmanagement.persistence.dto.StorageEmployeeDto;
+import com.bht.assetmanagement.persistence.dto.StorageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +15,7 @@ public class StorageController {
     private final StorageService storageService;
 
     @GetMapping
-    public List<StorageEmployeeDto> getAllStorages() {
+    public List<StorageDto> getAllStorages() {
         return storageService.getAllStorages();
     }
 }

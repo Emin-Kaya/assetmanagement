@@ -6,7 +6,6 @@ import com.bht.assetmanagement.shared.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -73,53 +72,73 @@ public class TestDataService {
         Asset asset = new Asset();
         asset.setName("iPhone 11 Pro");
         asset.setCategory("Telefon");
+        asset.setSerialnumber("12dfd36456");
+        asset.setEnable(true);
         assetRepository.save(asset);
 
         Asset asset1 = new Asset();
         asset1.setName("iPhone 12 Pro");
         asset1.setCategory("Telefon");
+        asset1.setSerialnumber("1236gdf456w");
+        asset1.setEnable(true);
         assetRepository.save(asset1);
+
+        Asset asset8 = new Asset();
+        asset8.setName("iPhone 12 Pro");
+        asset8.setCategory("Telefon");
+        asset8.setSerialnumber("1236gdhggasf456w");
+        asset8.setEnable(true);
+        assetRepository.save(asset8);
 
         Asset asset2 = new Asset();
         asset2.setName("iPhone 13 Pro");
         asset2.setCategory("Telefon");
+        asset2.setSerialnumber("12364fdgf56s");
+        asset2.setEnable(true);
         assetRepository.save(asset2);
 
         Asset asset3 = new Asset();
         asset3.setName("iPad Pro");
         asset3.setCategory("Tablet");
+        asset3.setSerialnumber("123gf6456s");
+        asset3.setEnable(true);
+
         assetRepository.save(asset3);
 
         Asset asset4 = new Asset();
         asset4.setName("MacBook Pro M1");
         asset4.setCategory("Laptop");
+        asset4.setSerialnumber("ddfgsdsddg25");
+        asset4.setEnable(true);
         assetRepository.save(asset4);
 
         Asset asset5 = new Asset();
         asset5.setName("Magic Mouse");
         asset5.setCategory("Zubehör");
+        asset5.setSerialnumber("1213536sd456s");
+        asset5.setEnable(true);
         assetRepository.save(asset5);
 
         Asset asset6 = new Asset();
         asset6.setName("Adobe Creative Cloud");
         asset6.setCategory("Lizensen");
+        asset6.setSerialnumber("1s2345679");
+        asset6.setEnable(true);
         assetRepository.save(asset6);
 
 
         Storage storage = new Storage();
         storage.setName("Storage-1");
         storage.getAssets().add(asset1);
-        storage.getAssets().add(asset1);
         storage.getAssets().add(asset2);
         storage.getAssets().add(asset3);
         storage.getAssets().add(asset4);
+        storage.getAssets().add(asset8);
 
         storageRepository.save(storage);
 
         Storage storage1 = new Storage();
         storage1.setName("Storage-2");
-        storage1.getAssets().add(asset4);
-        storage1.getAssets().add(asset4);
         storage.getAssets().add(asset5);
         storage.getAssets().add(asset6);
 
@@ -249,7 +268,7 @@ public class TestDataService {
         applicationUser7.setUserAccount(userAccount7);
         applicationUserRepository.save(applicationUser7);
 
-        AssetUserHistory assetUserHistory1 = new AssetUserHistory();
+        /*AssetUserHistory assetUserHistory1 = new AssetUserHistory();
         assetUserHistory1.setAsset(asset);
         assetUserHistory1.setLendStatus(LendStatus.RENTED);
         assetUserHistory1.setRendDate(dateUtils.createLocalDate());
@@ -317,7 +336,7 @@ public class TestDataService {
         assetUserHistory10.setLendStatus(LendStatus.RENTED);
         assetUserHistory10.setRendDate(dateUtils.createLocalDate());
         assetUserHistory10.setApplicationUser(applicationUser5);
-        assetUserHistoryRepository.save(assetUserHistory10);
+        assetUserHistoryRepository.save(assetUserHistory10);*/
 
 
         AssetInquiry assetInquiry = new AssetInquiry();
@@ -348,7 +367,7 @@ public class TestDataService {
 
         AssetInquiry assetInquiry2 = new AssetInquiry();
         assetInquiry2.setEntryDate(dateUtils.createLocalDate());
-        assetInquiry2.setNote("Bitte in Schwart");
+        assetInquiry2.setNote("Bitte in Schwarz");
         assetInquiry2.setPrice(79.99);
         assetInquiry2.setLink("www.apple.com");
         assetInquiry2.setEnable(false);
@@ -368,7 +387,7 @@ public class TestDataService {
         assetInquiry3.setStatus(Status.NOT_DONE);
         assetInquiry3.setOwner(applicationUser7);
         assetInquiry3.setAddress(address1);
-        assetInquiry3.setAssetName("iPhone 12");
+        assetInquiry3.setAssetName("iPhone 12 Pro");
         assetInquiry3.setAssetCategory("Telefon");
         assetInquiryRepository.save(assetInquiry3);
 
