@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.net.MalformedURLException;
 
 @RestController
@@ -28,19 +30,28 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public AuthenticationResponse signIn(@RequestBody LoginRequest loginRequest) {
-        return authService.signIn(loginRequest);
+    public AuthenticationResponse signIn(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+       AuthenticationResponse authenticationResponse = authService.signIn(loginRequest);
+
+        Cookie cookie = new Cookie("acces_token", authenticationResponse.getAuthenticationToken());
+
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+
+        response.addCookie(cookie);
+
+        return authenticationResponse;
     }
 
     @PostMapping("/refresh/token")
-    public AuthenticationResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
-        return authService.refreshToken(refreshTokenRequest);
+    public AuthenticationResponse refreshToken(@RequestParam String refreshToken) {
+        return authService.refreshToken(refreshToken);
     }
 
     @PostMapping("/signout")
     @ResponseStatus(HttpStatus.OK)
-    public void signOut(@RequestBody RefreshTokenRequest refreshTokenRequest) {
-        authService.signOut(refreshTokenRequest);
+    public void signOut(@RequestParam String refreshToken) {
+        authService.signOut(refreshToken);
     }
 
     @PutMapping("/change/password")

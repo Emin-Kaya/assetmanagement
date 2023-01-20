@@ -3,6 +3,8 @@ package com.bht.assetmanagement.config;
 import com.bht.assetmanagement.config.security.JwtAuthorizationFilter;
 import com.bht.assetmanagement.config.security.JwtUtils;
 import com.bht.assetmanagement.core.userAccount.UserAccountService;
+import com.bht.assetmanagement.shared.exception.AccsessDeniedHandler;
+import com.bht.assetmanagement.shared.exception.UnauthorizedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +31,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserAccountService userAccountService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+
+    @Bean
+    public UnauthorizedHandler unauthorizedHandler(){
+        return new UnauthorizedHandler();
+    };
+
+    @Bean
+    public AccsessDeniedHandler accsessDeniedHandler(){
+        return new AccsessDeniedHandler();
+    };
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
@@ -61,23 +73,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
+                .exceptionHandling().accessDeniedHandler(accsessDeniedHandler()).authenticationEntryPoint(unauthorizedHandler()).and()
                 .sessionManagement().sessionCreationPolicy(STATELESS).and()
                 .authorizeRequests()
                 .antMatchers("/api/v1/auth/**").permitAll()
                 .antMatchers("/api/v1/testdata/**").permitAll()
                 .antMatchers("/v3/**").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
-                .antMatchers("/api/v1/applicationUser/**").permitAll()
-                .antMatchers("/api/v1/employee/asset/**").hasAnyAuthority("ROLE_EMPLOYEE", "ROLE_MANAGER")
                 .antMatchers("/api/v1/asset/**").permitAll()
-                .antMatchers("/api/v1/storage/**").hasAnyAuthority("ROLE_EMPLOYEE")
-                .antMatchers("/api/v1/storage/manager/**").hasAnyAuthority("ROLE_MANAGER", "ROLE_ADMIN")
-                .antMatchers("/api/v1/assetInquiry/**").hasAnyAuthority("ROLE_EMPLOYEE")
-                .antMatchers("/api/v1/manager/assetInquiry/**").hasAnyAuthority("ROLE_MANAGER", "ROLE_ADMIN")
+                .antMatchers("/api/v1/manager/asset/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
+                .antMatchers("/api/v1/assetInquiry/**").permitAll()
+                .antMatchers("/api/v1/manager/assetInquiry/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
+                .antMatchers("/api/v1/storage/**").permitAll()
+                .antMatchers("/api/v1/manager/storage/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
+                .antMatchers("/api/v1/userAccount/**").permitAll()
+                .antMatchers("/api/v1/manager/userAccount/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
                 .antMatchers("/api/v1/admin/userAccount/**").hasAnyAuthority("ROLE_ADMIN")
-                .antMatchers("/api/v1/manager/userAccount/**").hasAnyAuthority("ROLE_MANAGER")
-                .antMatchers("/api/v1/admin/applicationUser/**").hasAnyAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated();
+
         http.headers().frameOptions().sameOrigin();
         http.addFilterBefore(new JwtAuthorizationFilter(userAccountService, jwtUtils), UsernamePasswordAuthenticationFilter.class);
     }

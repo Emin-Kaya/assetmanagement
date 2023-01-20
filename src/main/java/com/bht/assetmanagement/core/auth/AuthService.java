@@ -8,6 +8,7 @@ import com.bht.assetmanagement.core.userAccount.UserAccountMapper;
 import com.bht.assetmanagement.core.userAccount.UserAccountService;
 import com.bht.assetmanagement.core.verificationToken.VerificationTokenService;
 import com.bht.assetmanagement.persistence.dto.*;
+import com.bht.assetmanagement.persistence.entity.RefreshToken;
 import com.bht.assetmanagement.persistence.entity.Role;
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.entity.VerificationToken;
@@ -103,15 +104,27 @@ public class AuthService {
                 .build();
     }
 
-    public String signOut(RefreshTokenRequest refreshTokenRequest) {
-        refreshTokenService.deleteRefreshToken(refreshTokenRequest.getRefreshToken(), refreshTokenRequest.getUsername());
+    public String signOut(String refreshToken) {
+
+        refreshTokenService.deleteRefreshToken(refreshToken);
         return "You logged out.";
     }
 
-    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
-        return null;
+    public AuthenticationResponse refreshToken(String refreshToken) {
+      //  refreshTokenService.generateRefreshToken(refreshTokenRequest.getUsername());
+
+        RefreshToken token = refreshTokenService.getRefreshtoken(refreshToken);
+        UserAccount userAccount = userAccountService.findUserByUsername(token.getUsername());
+        String jwtToken = jwtUtils.generateJwtTokenByRefresh(userAccount);
+
+
+        return AuthenticationResponse.builder()
+                .authenticationToken(jwtToken)
+                .role("ROLE_"+userAccount.getRole().toString())
+                .expiresAt(LocalDateTime.now(clock).plusSeconds(jwtUtils.getJwtExpirationMs()))
+                .refreshToken(token.getToken())
+                .build();
     }
-    //TODO FRAG VIVI
 
     public void changeUserPassword(PasswordChangeRequest passwordChangeRequest) {
         UserAccount userAccount = userAccountService.getProfileInformation();

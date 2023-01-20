@@ -1,6 +1,7 @@
 package com.bht.assetmanagement.core.assetInquiry;
 
 import com.bht.assetmanagement.IntegrationTestSetup;
+import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.repository.AssetInquiryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,14 @@ public class AssetInquiryControllerIT extends IntegrationTestSetup {
 
     @Test
     void createAssetInquiryTest() throws Exception {
+        UserAccount userAccount = testDataBuilder.aValidEmployeeUserAccount();
         long beforeCount = assetInquiryRepository.count();
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/v1/assetInquiry")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getRequestBody(testDataBuilder.aValidAssetInquiryRequest()))
-                        .with(getAuthentication(testDataBuilder.aValidEmployeeApplicationUser())))
+                        .with(getAuthentication(userAccount.getApplicationUser())))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isCreated());

@@ -21,9 +21,10 @@ public class ManagerAssetController {
         assetService.saveRequestToStorage(assetRequest);
     }
 
-    @PutMapping("/{assetId}")
-    public void removeAssetFromStorage(@PathVariable String assetId, @RequestParam String storageId) {
-        assetService.removeAssetFromStorage(assetId, storageId);
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void deleteAsset(@PathVariable String id) {
+        assetService.delete(id);
     }
 
     @GetMapping()

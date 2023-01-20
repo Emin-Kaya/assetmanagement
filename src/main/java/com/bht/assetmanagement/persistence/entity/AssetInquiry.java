@@ -28,9 +28,6 @@ public class AssetInquiry {
     private String note;
 
     @Column
-    private Double price;
-
-    @Column
     private String link;
 
     @Column
@@ -53,4 +50,10 @@ public class AssetInquiry {
 
     @Column
     private String assetCategory;
+
+    @Column
+    private String memory;
+
+    @Column
+    private boolean isArchived = false;
 }

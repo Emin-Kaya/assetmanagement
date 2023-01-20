@@ -24,11 +24,25 @@ public class StorageService {
     private final StorageRepository storageRepository;
 
     public List<StorageResponse> getAll() {
-        return storageRepository.findAll().stream().map(StorageMapper.INSTANCE::mapEntityToStorageResponse).collect(Collectors.toList());
+        List<Storage> storageList = findAll();
+        List<StorageResponse> storageResponses = new ArrayList<>();
+
+        for (Storage storage:storageList ) {
+            storageResponses.add(
+                    StorageResponse
+                            .builder()
+                            .id(storage.getId().toString())
+                            .name(storage.getName())
+                            .assetDtos(assetDtoListNotArchived(storage))
+                            .build()
+            );
+        }
+
+        return  storageResponses;
     }
 
     public List<StorageDto> getAllStorages() {
-        return storageRepository.findAll().stream().map(StorageMapper.INSTANCE::mapEntityToStorageDto).collect(Collectors.toList());
+        return storageRepository.findAll().stream().filter(it->!it.isArchived()).map(StorageMapper.INSTANCE::mapEntityToStorageDto).collect(Collectors.toList());
     }
 
     public void save(Storage storage) {
@@ -48,8 +62,11 @@ public class StorageService {
     public void delete(String id) {
         Storage storage = findStorage(id);
 
-        if (storage.getAssets().isEmpty()){
-            storageRepository.delete(findStorage(id));
+        List<Asset> list = storage.getAssets().stream().filter(it->!it.isArchived()).collect(Collectors.toList());
+
+        if (list.isEmpty()){
+            storage.setArchived(true);
+            save(storage);
         }else throw new RuntimeException("Storage cannot be deleted because there are assets inside.");
     }
 
@@ -62,10 +79,10 @@ public class StorageService {
     }
 
     public List<Storage> findAll() {
-        return storageRepository.findAll();
+        return storageRepository.findAll().stream().filter(it->!it.isArchived()).collect(Collectors.toList());
     }
 
-    public List<StorageResponse> getAllStoragesContainsAssetss(String name, String assetCategory) {
+    public List<StorageResponse> getAllStoragesContainsAssets(String name, String assetCategory) {
         return findAll()
                 .stream()
                 .filter(storage -> containsAsset(storage, name, assetCategory)
@@ -74,7 +91,7 @@ public class StorageService {
 
 
     public List<StorageResponse> getAllStoragesContainsAsset(String name, String assetCategory) {
-         List<Storage> a = findAll()
+         List<Storage> storageList = findAll()
                 .stream()
                 .filter(storage -> containsAsset(storage, name, assetCategory))
                  .collect(Collectors.toList());
@@ -82,18 +99,25 @@ public class StorageService {
 
 
          List<StorageResponse> storageResponses = new ArrayList<>();
-        StorageResponse storageResponse = new StorageResponse();
 
 
-        for (Storage storage:a ) {
-            List<AssetDto> s = storage.getAssets().stream().filter(asset -> asset.getName().equals(name)).map(AssetMapper.INSTANCE::mapEntityToAssetDto).collect(Collectors.toList());
-            storageResponse.setId(storage.getId().toString());
-            storageResponse.setName(storage.getName());
-            storageResponse.setAssetDtos(s);
-            storageResponses.add(storageResponse);
+        for (Storage storage:storageList ) {
+            List<AssetDto> assetDtoList = storage
+                    .getAssets()
+                    .stream()
+                    .filter(it -> it.getName().equals(name))
+                    .filter(it -> !it.isArchived())
+                    .map(AssetMapper.INSTANCE::mapEntityToAssetDto).collect(Collectors.toList());
+
+            storageResponses.add(
+                    StorageResponse
+                            .builder()
+                            .id(storage.getId().toString())
+                            .name(storage.getName())
+                            .assetDtos(assetDtoList)
+                            .build()
+            );
         }
-
-
 
          return  storageResponses;
     }
@@ -105,14 +129,23 @@ public class StorageService {
                 .filter(storage -> containsAssetId(storage, assetId)).findFirst().orElseThrow();
     }
 
+    public StorageResponse getStorageById(String id) {
+        Storage storage = findStorage(id);
 
+        return StorageResponse
+                .builder()
+                .id(storage.getId().toString())
+                .name(storage.getName())
+                .assetDtos(assetDtoListNotArchived(storage))
+                .build();
+    }
 
 
     private boolean containsAsset(Storage storage, String name, String assetCategory){
         boolean filter = false;
 
         for (Asset asset: storage.getAssets()) {
-            if (asset.getName().equals(name) && asset.getCategory().equals(assetCategory)) {
+            if (asset.getName().equals(name) && asset.getCategory().equals(assetCategory) && !asset.isArchived()) {
                 filter = true;
                 break;
             }
@@ -132,6 +165,14 @@ public class StorageService {
         }
 
         return filter;
+    }
+
+    private List<AssetDto> assetDtoListNotArchived(Storage storage){
+        return storage
+                .getAssets()
+                .stream()
+                .filter(it -> !it.isArchived())
+                .map(AssetMapper.INSTANCE::mapEntityToAssetDto).collect(Collectors.toList());
     }
 }
 

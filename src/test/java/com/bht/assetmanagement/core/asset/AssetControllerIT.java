@@ -1,21 +1,19 @@
 package com.bht.assetmanagement.core.asset;
 
 import com.bht.assetmanagement.IntegrationTestSetup;
-import com.bht.assetmanagement.persistence.dto.AssetRequest;
 import com.bht.assetmanagement.persistence.entity.Asset;
 import com.bht.assetmanagement.persistence.entity.Storage;
+import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.repository.AssetRepository;
 import com.bht.assetmanagement.persistence.repository.StorageRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import javax.transaction.Transactional;
 import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AssetControllerIT extends IntegrationTestSetup {
 
@@ -35,77 +33,56 @@ public class AssetControllerIT extends IntegrationTestSetup {
     }
 
     @Test
-    void saveAssetToStorageTest() throws Exception {
-        long beforeCount = assetRepository.count();
+    void getAllAssetsTest() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/v1/asset")
+                        .with(getAuthentication("EMPLOYEE")))
+                .andExpect(MockMvcResultMatchers
+                        .status()
+                        .isOk());
+    }
+
+    @Test
+    @Transactional
+    void removeAssetFromStorageUserAndSaveToStorage() throws Exception {
+        UserAccount userAccount = testDataBuilder.aValidUserAccount("EMPLOYEE");
+        Asset asset = testDataBuilder.aValidAsset();
+        assetService.saveAssetToApplicationUser(asset.getId().toString(), userAccount.getApplicationUser().getId().toString());
+
+
+        Storage storage = testDataBuilder.aValidStorage();
+
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post("/api/v1/asset")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(getRequestBody(testDataBuilder.aValidAssetRequest()))
-                        .with(getAuthentication("MANAGER")))
+                        .put("/api/v1/asset/{id}", asset.getId())
+                        .with(getAuthentication(userAccount.getApplicationUser())).param("storageId", storage.getId().toString()))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isAccepted());
-
-        assertEquals(assetRepository.count(), beforeCount + 1);
     }
 
-
     @Test
-    void canNotSaveAssetToStorageTest() throws Exception {
-        AssetRequest assetRequest = new AssetRequest("iPhone 12", "Telefon", "invalidStorageID");
+    @Transactional
+    void canNotRemoveInvalidAssetFromUserAndSaveToStorage() throws Exception {
+        UserAccount userAccount = testDataBuilder.aValidUserAccount("EMPLOYEE");
+        Asset asset = testDataBuilder.aValidAsset();
+        assetService.saveAssetToApplicationUser(asset.getId().toString(), userAccount.getApplicationUser().getId().toString());
+
+
+        Storage storage = testDataBuilder.aValidStorage();
 
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post("/api/v1/asset")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(getRequestBody(assetRequest))
-                        .with(getAuthentication("MANAGER")))
+                        .put("/api/v1/asset/{id}", "invalidId")
+                        .with(getAuthentication(userAccount.getApplicationUser()))
+                        .param("storageId", storage.getId().toString()))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isBadRequest());
     }
 
-
     @Test
-    void getAllAssetsTest() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/v1/asset")
-                        .with(getAuthentication("MANAGER")))
-                .andExpect(MockMvcResultMatchers
-                        .status()
-                        .isOk());
-    }
-
-    @Test
-    void removeAssetFromStorageTest() throws Exception {
-        Storage storage = testDataBuilder.aValidStorage();
-        Asset asset = testDataBuilder.aValidAsset();
-        assetService.saveAssetToStorage(asset, storage);
-
-        this.mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/v1/asset/{assetId}", asset.getId())
-                        .with(getAuthentication("MANAGER")).param("storageId", storage.getId().toString()))
-                .andExpect(MockMvcResultMatchers
-                        .status()
-                        .isOk());
-    }
-
-    @Test
-    void canNotRemoveAssetFromStorageTest() throws Exception {
-        Storage storage = testDataBuilder.aValidStorage();
-        Asset asset = testDataBuilder.aValidAsset();
-
-        this.mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/v1/asset/{assetId}", asset.getId())
-                        .with(getAuthentication("MANAGER")).param("storageId", storage.getId().toString()))
-                .andExpect(MockMvcResultMatchers
-                        .status()
-                        .isNotFound());
-    }
-
-    @Test
-    void canNotRemoveInvalidAssetFromStorageTest() throws Exception {
+    void canNotRemoveAssetFromUserAndSaveToInvalidStorage() throws Exception {
         Storage storage = testDataBuilder.aValidStorage();
         Asset asset = new Asset();
         asset.setId(UUID.randomUUID());
@@ -114,7 +91,8 @@ public class AssetControllerIT extends IntegrationTestSetup {
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .put("/api/v1/asset/{assetId}", asset.getId())
-                        .with(getAuthentication("MANAGER")).param("storageId", storage.getId().toString()))
+                        .with(getAuthentication("MANAGER"))
+                        .param("storageId", storage.getId().toString()))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isNotFound());

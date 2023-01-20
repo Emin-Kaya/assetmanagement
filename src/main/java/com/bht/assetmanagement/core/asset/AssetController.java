@@ -20,7 +20,7 @@ public class AssetController {
     }
 
     @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public void removeAssetFromUser(@PathVariable String id, @RequestParam String storageId) {
         assetService.removeAssetFromUser(id, storageId);
     }

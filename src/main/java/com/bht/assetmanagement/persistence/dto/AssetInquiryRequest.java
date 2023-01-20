@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AssetInquiryRequest {
     private String note;
-    private Double price;
     private String link;
     private AddressRequest addressRequest;
     private String assetName;
     private String assetCategory;
+    private String memory;
 }

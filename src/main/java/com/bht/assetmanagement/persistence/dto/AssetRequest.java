@@ -13,6 +13,7 @@ public class AssetRequest {
     private String serialnumber;
     private String name;
     private String category;
-    private String notes;
-    private String storageId;
+    private String notes ;
+    private String memory ;
+    private String storageId = null;
 }

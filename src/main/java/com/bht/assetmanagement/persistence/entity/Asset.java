@@ -28,14 +28,17 @@ public class Asset {
     private String name;
 
     @Column
-    private String memory;
+    private String memory = null;
 
     @Column
-    private String notes;
+    private String notes = null;
 
     @Column
     private boolean enable;
 
     @Column(nullable = false)
     private String category;
+
+    @Column
+    private boolean isArchived = false;
 }

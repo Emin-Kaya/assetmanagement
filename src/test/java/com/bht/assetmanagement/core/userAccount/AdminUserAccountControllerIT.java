@@ -3,6 +3,7 @@ package com.bht.assetmanagement.core.userAccount;
 import com.bht.assetmanagement.IntegrationTestSetup;
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.repository.UserAccountRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,8 +17,13 @@ public class AdminUserAccountControllerIT extends IntegrationTestSetup {
     @Autowired
     private UserAccountRepository userAccountRepository;
 
+    @BeforeEach
+    public void setUp() {
+        userAccountRepository.deleteAll();
+    }
+
     @Test
-    void createAssetManagerUserAccountTest() throws Exception {
+    void createAssetUserAccountTest() throws Exception {
         long beforeCount = userAccountRepository.count();
 
         this.mockMvc.perform(MockMvcRequestBuilders
@@ -33,7 +39,7 @@ public class AdminUserAccountControllerIT extends IntegrationTestSetup {
     }
 
     @Test
-    void canNotCreateDublicateAssetManagerUserAccountTest() throws Exception {
+    void canNotCreateDublicatUserAccountTest() throws Exception {
         UserAccount userAccount = testDataBuilder.aValidManagerUserAccount();
         userAccount.setUsername("aValidUsername");
         userAccount.setEmail("aEmail@mail.de");
@@ -50,5 +56,29 @@ public class AdminUserAccountControllerIT extends IntegrationTestSetup {
                         .isConflict());
 
         assertEquals(userAccountRepository.count(), beforeCount + 1);
+    }
+
+    @Test
+    void deleteUserAccountTest() throws Exception {
+        UserAccount userAccount = testDataBuilder.aValidEmployeeUserAccount();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .put("/api/v1/admin/userAccount" )
+                        .with(getAuthentication("ADMIN"))
+                        .param("id", userAccount.getId().toString()))
+                .andExpect(MockMvcResultMatchers
+                        .status()
+                        .isNoContent());
+    }
+
+    @Test
+    void canNotDeleteUserAccountTest() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .put("/api/v1/admin/userAccount" )
+                        .with(getAuthentication("ADMIN"))
+                        .param("id", "invalidUserId"))
+
+                .andExpect(MockMvcResultMatchers
+                        .status()
+                        .isBadRequest());
     }
 }

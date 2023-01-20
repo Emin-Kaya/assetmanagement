@@ -10,6 +10,7 @@ import com.bht.assetmanagement.persistence.dto.AssetRequest;
 import com.bht.assetmanagement.persistence.entity.*;
 import com.bht.assetmanagement.persistence.repository.AssetRepository;
 import com.bht.assetmanagement.shared.email.EmailUtils;
+import com.bht.assetmanagement.shared.exception.DublicateEntryException;
 import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -56,6 +57,7 @@ public class AssetService {
         return assetRepository
                 .findAll()
                 .stream()
+                .filter(it -> !it.isArchived())
                 .map(AssetMapper.INSTANCE::mapEntityToAssetDto).collect(Collectors.toList());
     }
 
@@ -77,20 +79,31 @@ public class AssetService {
                 .map(AssetMapper.INSTANCE::mapEntityToAssetDto).collect(Collectors.toList());
     }
 
-    public Asset create(AssetRequest assetRequest) {
+
+    public Boolean existsAsset(String serialnumber) {
+        return assetRepository.existsBySerialnumber(serialnumber);
+    }
+
+
+    public Asset create(AssetRequest assetRequest, Boolean enable) {
         Asset asset = AssetMapper.INSTANCE.mapRequestToAsset(assetRequest);
+
+        if (existsAsset(assetRequest.getSerialnumber()))
+            throw new DublicateEntryException("This asset exists already.");
+
+        asset.setEnable(enable);
         return assetRepository.save(asset);
     }
 
     public Optional<Asset> getAsset(AssetRequest assetRequest) {
-        return assetRepository.findByName(assetRequest.getName());
+        return assetRepository.findBySerialnumber(assetRequest.getSerialnumber()).filter(it -> !it.isArchived());
     }
 
     public void saveRequestToStorage(AssetRequest assetRequest) {
-        Asset asset = new Asset();
+        Asset asset;
         if (getAsset(assetRequest).isEmpty()) {
-            asset = create(assetRequest);
-        }
+            asset = create(assetRequest, true);
+        } else throw new DublicateEntryException("Asset with serialnumber already exists.");
         saveAssetToStorage(asset, storageService.findStorage(assetRequest.getStorageId()));
     }
 
@@ -152,7 +165,15 @@ public class AssetService {
     }
 
     private Asset findAsset(String id) {
-        return assetRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntryNotFoundException("Asset with id " + id + " does not exist."));
+        return assetRepository.findById(UUID.fromString(id)).filter(it -> !it.isArchived()).orElseThrow(() -> new EntryNotFoundException("Asset with id " + id + " does not exist."));
     }
 
+    public void delete(String id) {
+        Asset asset = findAsset(id);
+        if (!asset.isEnable()) {
+            throw new RuntimeException("Asset kann nicht gelöscht werden, weil es von einem User genutzt wird.");
+        }
+        asset.setArchived(true);
+        assetRepository.save(asset);
+    }
 }

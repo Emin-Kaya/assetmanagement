@@ -17,7 +17,7 @@ public class EmailUtils {
     }
 
     public String getBodyActivationText(String token) throws MalformedURLException {
-        URL activationUrl = new URL("http://localhost:8080/api/v1/auth/activate/account/" + token);
+        URL activationUrl = new URL("http://localhost:3000/confirm/registration/" + token);
         return "Please click on the below url to activate your account: " + activationUrl;
     }
 
@@ -52,7 +52,7 @@ public class EmailUtils {
                 + assetInquiry.getOwner().getLastName()
                 + "\n bearbeitet. Bitte vergessen Sie nicht das Asset:\n "
                 + assetInquiry.getAssetName()
-                + " an die Adresse: \n "
+                + " zu bestellen und an die Adresse: \n "
                 + assetInquiry.getAddress().getStreetName() + " " + assetInquiry.getAddress().getStreetNumber()
                 + "\n"
                 + assetInquiry.getAddress().getPostalCode() + " " + assetInquiry.getAddress().getCity()

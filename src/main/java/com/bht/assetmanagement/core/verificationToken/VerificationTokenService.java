@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -34,10 +33,7 @@ public class VerificationTokenService {
     }
 
     public VerificationToken findVerificationTokenByToken(String token) {
-        Optional<VerificationToken> verificationToken = verificationTokenRepository.findVerificationTokenByToken(token);
-        verificationToken.orElseThrow(VerificationTokenNotFoundException::new);
-
-        return verificationToken.get();
+        return verificationTokenRepository.findVerificationTokenByToken(token).orElseThrow(() -> new VerificationTokenNotFoundException("Token not found."));
     }
 
     public void deleteVerificationToken(String token) {

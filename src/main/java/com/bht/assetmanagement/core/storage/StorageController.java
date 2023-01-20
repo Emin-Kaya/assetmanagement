@@ -15,7 +15,7 @@ public class StorageController {
     private final StorageService storageService;
 
     @GetMapping
-    public List<StorageDto> getAllStorages() {
+    public List<StorageDto> getAll() {
         return storageService.getAllStorages();
     }
 }

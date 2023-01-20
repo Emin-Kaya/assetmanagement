@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Repository
 public interface AssetRepository extends JpaRepository<Asset, String> {
-    Optional<Asset> findByName(String name);
-
+    Optional<Asset> findBySerialnumber(String serialnumber);
+    Boolean existsBySerialnumber(String serialnumber);
     Optional<Asset> findById(UUID id);
 }

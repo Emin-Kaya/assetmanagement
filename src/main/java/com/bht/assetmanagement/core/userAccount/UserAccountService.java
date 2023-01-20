@@ -57,7 +57,7 @@ public class UserAccountService implements UserDetailsService {
         );
     }
 
-    private UserAccount findUserByUsername(String username) {
+    public UserAccount findUserByUsername(String username) {
         Optional<UserAccount> userAccountOpt = userAccountRepository.findByUsername(username);
 
         return userAccountOpt.orElseThrow(() -> new EntryNotFoundException("User account not found"));
@@ -146,8 +146,9 @@ public class UserAccountService implements UserDetailsService {
         if (hasAssets) {
             userAccount.setEnabled(false);
             userAccount.setArchived(true);
+            userAccount.getApplicationUser().getAssetInquiries().forEach(assetInquiry -> assetInquiry.setArchived(true));
             userAccountRepository.save(userAccount);
-        }
+        }else throw new RuntimeException("User hat Assets.");
     }
 
     public List<UserAccountDto> getAll() {

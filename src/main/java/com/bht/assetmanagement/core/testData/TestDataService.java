@@ -20,6 +20,9 @@ public class TestDataService {
     private final UserAccountRepository userAccountRepository;
     private final VerificationTokenRepository verificationTokenRepository;
     private final AssetUserHistoryRepository assetUserHistoryRepository;
+
+    private final RefreshTokenRepository refreshTokenRepository;
+
     private final StorageRepository storageRepository;
     private static final Logger logger = LogManager.getLogger();
     private final DateUtils dateUtils;
@@ -36,6 +39,7 @@ public class TestDataService {
         applicationUserRepository.deleteAll();
         assetRepository.deleteAll();
         userAccountRepository.deleteAll();
+        refreshTokenRepository.deleteAll();
 
         initializeTestData();
         logger.info("Finished reseting data");
@@ -83,13 +87,6 @@ public class TestDataService {
         asset1.setEnable(true);
         assetRepository.save(asset1);
 
-        Asset asset8 = new Asset();
-        asset8.setName("iPhone 12 Pro");
-        asset8.setCategory("Telefon");
-        asset8.setSerialnumber("1236gdhggasf456w");
-        asset8.setEnable(true);
-        assetRepository.save(asset8);
-
         Asset asset2 = new Asset();
         asset2.setName("iPhone 13 Pro");
         asset2.setCategory("Telefon");
@@ -127,20 +124,29 @@ public class TestDataService {
         assetRepository.save(asset6);
 
 
+        Asset asset8 = new Asset();
+        asset8.setName("iPhone 12 Pro");
+        asset8.setCategory("Telefon");
+        asset8.setSerialnumber("1236gdhggasf456w");
+        asset8.setEnable(true);
+        assetRepository.save(asset8);
+
+
         Storage storage = new Storage();
         storage.setName("Storage-1");
         storage.getAssets().add(asset1);
         storage.getAssets().add(asset2);
         storage.getAssets().add(asset3);
         storage.getAssets().add(asset4);
-        storage.getAssets().add(asset8);
 
         storageRepository.save(storage);
 
         Storage storage1 = new Storage();
         storage1.setName("Storage-2");
-        storage.getAssets().add(asset5);
-        storage.getAssets().add(asset6);
+        storage1.getAssets().add(asset5);
+        storage1.getAssets().add(asset6);
+        storage1.getAssets().add(asset8);
+
 
         storageRepository.save(storage1);
 
@@ -342,7 +348,6 @@ public class TestDataService {
         AssetInquiry assetInquiry = new AssetInquiry();
         assetInquiry.setEntryDate(dateUtils.createLocalDate());
         assetInquiry.setNote("Bitte die 256GB Variante");
-        assetInquiry.setPrice(900.0);
         assetInquiry.setLink("www.apple.com");
         assetInquiry.setEnable(false);
         assetInquiry.setStatus(Status.NOT_DONE);
@@ -355,7 +360,6 @@ public class TestDataService {
         AssetInquiry assetInquiry1 = new AssetInquiry();
         assetInquiry1.setEntryDate(dateUtils.createLocalDate());
         assetInquiry1.setNote("Bitte die 512GB Variante");
-        assetInquiry1.setPrice(1200.99);
         assetInquiry1.setLink("www.apple.com");
         assetInquiry1.setEnable(false);
         assetInquiry1.setStatus(Status.NOT_DONE);
@@ -368,7 +372,6 @@ public class TestDataService {
         AssetInquiry assetInquiry2 = new AssetInquiry();
         assetInquiry2.setEntryDate(dateUtils.createLocalDate());
         assetInquiry2.setNote("Bitte in Schwarz");
-        assetInquiry2.setPrice(79.99);
         assetInquiry2.setLink("www.apple.com");
         assetInquiry2.setEnable(false);
         assetInquiry2.setStatus(Status.NOT_DONE);
@@ -381,7 +384,6 @@ public class TestDataService {
         AssetInquiry assetInquiry3 = new AssetInquiry();
         assetInquiry3.setEntryDate(dateUtils.createLocalDate());
         assetInquiry3.setNote("Bitte die 64GB Variante");
-        assetInquiry3.setPrice(799.99);
         assetInquiry3.setLink("www.apple.com");
         assetInquiry3.setEnable(false);
         assetInquiry3.setStatus(Status.NOT_DONE);
@@ -394,7 +396,6 @@ public class TestDataService {
         AssetInquiry assetInquiry4 = new AssetInquiry();
         assetInquiry4.setEntryDate(dateUtils.createLocalDate());
         assetInquiry4.setNote("Bitte in 16 Zoll");
-        assetInquiry4.setPrice(2500.00);
         assetInquiry4.setLink("www.apple.com");
         assetInquiry4.setEnable(false);
         assetInquiry4.setStatus(Status.NOT_DONE);

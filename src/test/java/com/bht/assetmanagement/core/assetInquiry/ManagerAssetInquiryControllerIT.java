@@ -1,7 +1,6 @@
 package com.bht.assetmanagement.core.assetInquiry;
 
 import com.bht.assetmanagement.IntegrationTestSetup;
-import com.bht.assetmanagement.core.asset.AssetService;
 import com.bht.assetmanagement.persistence.entity.Asset;
 import com.bht.assetmanagement.persistence.entity.AssetInquiry;
 import com.bht.assetmanagement.persistence.entity.Storage;
@@ -12,10 +11,10 @@ import com.bht.assetmanagement.persistence.repository.StorageRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import javax.transaction.Transactional;
 import java.util.UUID;
 
 public class ManagerAssetInquiryControllerIT extends IntegrationTestSetup {
@@ -32,7 +31,6 @@ public class ManagerAssetInquiryControllerIT extends IntegrationTestSetup {
     @Autowired
     private AssetInquiryRepository assetInquiryRepository;
 
-
     @BeforeEach
     public void setUp() {
         assetInquiryRepository.deleteAll();
@@ -41,15 +39,13 @@ public class ManagerAssetInquiryControllerIT extends IntegrationTestSetup {
         assetRepository.deleteAll();
     }
 
-
-
     @Test
     void cancelAssetInquiryTest() throws Exception {
         AssetInquiry assetInquiry = testDataBuilder.aValidAssetInquiry();
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .put("/api/v1/manager/assetInquiry/{id}", assetInquiry.getId())
-                        .with(getAuthentication(testDataBuilder.aValidManagerApplicationUser())))
+                        .with(getAuthentication("MANAGER")))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isNoContent());
@@ -63,7 +59,7 @@ public class ManagerAssetInquiryControllerIT extends IntegrationTestSetup {
 
         this.mockMvc.perform(MockMvcRequestBuilders
                         .put("/api/v1/manager/assetInquiry/{id}", assetInquiry.getId())
-                        .with(getAuthentication(testDataBuilder.aValidManagerApplicationUser())))
+                        .with(getAuthentication("MANAGER")))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isNotFound());
@@ -74,8 +70,8 @@ public class ManagerAssetInquiryControllerIT extends IntegrationTestSetup {
         AssetInquiry assetInquiry = testDataBuilder.aValidAssetInquiry();
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/v1/manager/assetInquiry/confirm/{id}", assetInquiry.getId())
-                        .with(getAuthentication(testDataBuilder.aValidManagerApplicationUser())))
+                        .get("/api/v1/manager/assetInquiry/confirm/{id}", assetInquiry.getId())
+                        .with(getAuthentication("MANAGER")))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isAccepted());
@@ -88,16 +84,19 @@ public class ManagerAssetInquiryControllerIT extends IntegrationTestSetup {
         assetInquiry.setId(UUID.randomUUID());
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/v1/manager/assetInquiry/confirm/{id}", assetInquiry.getId())
-                        .with(getAuthentication(testDataBuilder.aValidManagerApplicationUser())))
+                        .get("/api/v1/manager/assetInquiry/confirm/{id}", assetInquiry.getId())
+                        .with(getAuthentication("MANAGER")))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isNotFound());
     }
 
     @Test
-    void handleAssetInquriyInStorageTest() throws Exception {
+    void canConfirmAssetInquriyFromExistingAssetsTest() throws Exception {
         Asset asset = testDataBuilder.aValidAsset();
+        asset.setEnable(true);
+        assetRepository.save(asset);
+
         Storage storage = testDataBuilder.aValidStorage();
         storage.getAssets().add(asset);
         storageRepository.save(storage);
@@ -105,47 +104,55 @@ public class ManagerAssetInquiryControllerIT extends IntegrationTestSetup {
         AssetInquiry assetInquiry = testDataBuilder.aValidAssetInquiry();
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/v1/manager/assetInquiry/confirm/handle/{assetInquiryId}", assetInquiry.getId())
-                        .with(getAuthentication(testDataBuilder.aValidManagerApplicationUser())).param("storageId", storage.getId().toString()))
+                        .put("/api/v1/manager/assetInquiry/confirm/existing/{id}", assetInquiry.getId())
+                        .with(getAuthentication("MANAGER"))
+                        .param("assetId", asset.getId().toString()))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isAccepted());
     }
 
     @Test
-    void canNotHandleInvalidAssetInquriyInStorageTest() throws Exception {
+    void canNotConfirmInvalidAssetInquriyFromExistingAssetsTest() throws Exception {
         Asset asset = testDataBuilder.aValidAsset();
+        asset.setEnable(true);
+        assetRepository.save(asset);
+
         Storage storage = testDataBuilder.aValidStorage();
         storage.getAssets().add(asset);
         storageRepository.save(storage);
 
         AssetInquiry assetInquiry = testDataBuilder.aValidAssetInquiry();
-        assetInquiry.setId(UUID.randomUUID());
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/v1/manager/assetInquiry/confirm/handle/{assetInquiryId}", assetInquiry.getId())
-                        .with(getAuthentication(testDataBuilder.aValidManagerApplicationUser())).param("storageId", storage.getId().toString()))
+                        .put("/api/v1/manager/assetInquiry/confirm/existing/{id}", assetInquiry.getId())
+                        .with(getAuthentication("MANAGER"))
+                        .param("assetId", "invalidAssetId"))
                 .andExpect(MockMvcResultMatchers
                         .status()
-                        .isNotFound());
+                        .isBadRequest());
     }
 
     @Test
-    void canNotHandleAssetInquriyInInvalidStorageTest() throws Exception {
+    void canOrderAssetForAssetInquriyTest() throws Exception {
         Asset asset = testDataBuilder.aValidAsset();
+        asset.setEnable(true);
+        assetRepository.save(asset);
+
         Storage storage = testDataBuilder.aValidStorage();
-        storage.setId(UUID.randomUUID());
         storage.getAssets().add(asset);
         storageRepository.save(storage);
 
         AssetInquiry assetInquiry = testDataBuilder.aValidAssetInquiry();
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/v1/manager/assetInquiry/confirm/handle/{assetInquiryId}", assetInquiry.getId())
-                        .with(getAuthentication(testDataBuilder.aValidManagerApplicationUser())).param("storageId", storage.getId().toString()))
+                        .put("/api/v1/manager/assetInquiry/confirm/order/{id}", assetInquiry.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(getRequestBody(testDataBuilder.aValidAssetRequest()))
+                        .with(getAuthentication("MANAGER")))
                 .andExpect(MockMvcResultMatchers
                         .status()
-                        .isNotFound());
+                        .isAccepted());
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.bht.assetmanagement.core.refreshToken;
 
 import com.bht.assetmanagement.persistence.entity.RefreshToken;
 import com.bht.assetmanagement.persistence.repository.RefreshTokenRepository;
+import com.bht.assetmanagement.shared.exception.EntryNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +28,9 @@ public class RefreshTokenService {
         return refreshTokenRepository.save(refreshToken);
     }
 
-    public void deleteRefreshToken(String refreshToken, String username) {
-        int countDelete = refreshTokenRepository.deleteRefreshTokenByTokenAndUsername(refreshToken, username);
+    public void deleteRefreshToken(String refreshToken) {
+
+        int countDelete = refreshTokenRepository.deleteRefreshTokenByToken(refreshToken);
         if (countDelete == 0) {
             throw new RuntimeException("Could not delete token");
         }
@@ -39,5 +41,9 @@ public class RefreshTokenService {
         if (deleted == 0) {
             throw new RuntimeException("Could not delete token");
         }
+    }
+
+    public RefreshToken getRefreshtoken(String refreshToken) {
+        return refreshTokenRepository.findRefreshTokenByToken(refreshToken).orElseThrow(()-> new EntryNotFoundException("Refreshtoken found"));
     }
 }

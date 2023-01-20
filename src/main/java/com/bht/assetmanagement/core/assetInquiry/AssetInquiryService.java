@@ -2,7 +2,6 @@ package com.bht.assetmanagement.core.assetInquiry;
 
 import com.bht.assetmanagement.core.address.AddressService;
 import com.bht.assetmanagement.core.applicationUser.ApplicationUserMapper;
-import com.bht.assetmanagement.core.applicationUser.ApplicationUserService;
 import com.bht.assetmanagement.core.asset.AssetService;
 import com.bht.assetmanagement.core.email.EmailService;
 import com.bht.assetmanagement.core.storage.StorageService;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.bht.assetmanagement.persistence.entity.Status.*;
 
@@ -38,10 +38,10 @@ public class AssetInquiryService {
         return assetInquiryRepository.save(assetInquiry);
     }
     public AssetInquiry find(String id) {
-        return assetInquiryRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntryNotFoundException("AssetInquiry with id: " + id + "does not exist."));
+        return assetInquiryRepository.findById(UUID.fromString(id)).filter(it->!it.isArchived()).orElseThrow(() -> new EntryNotFoundException("AssetInquiry with id: " + id + "does not exist."));
     }
     public List<AssetInquiryDto> getAll() {
-        List<AssetInquiry> assetInquiryList = assetInquiryRepository.findAll();
+        List<AssetInquiry> assetInquiryList = assetInquiryRepository.findAll().stream().filter(it->!it.isArchived()).collect(Collectors.toList());
         AssetInquiryDto assetInquiryDto;
 
         List<AssetInquiryDto> assetInquiryDtoList = new ArrayList<>();
@@ -121,20 +121,20 @@ public class AssetInquiryService {
         assetInquiry.setStatus(DONE);
         save(assetInquiry);
 
-
         UserAccount userAccount = userAccountService.getCurrenUser();
         String assetManagerMail = userAccount.getEmail();
         String employeeMail = assetInquiry.getOwner().getUserAccount().getEmail();
 
+
         emailService.sendMessage(assetManagerMail, emailUtils.getSubjectOrderNotificationText(), emailUtils.getBodyOrderAndStorageRemoveNotificationText(assetInquiry, storage));
-        emailService.sendMessage(assetManagerMail, employeeMail,  emailUtils.getSubjectIsEnabledText(), emailUtils.getBodyEnabledText());
+        emailService.sendMessage(assetManagerMail, assetInquiry.getOwner().getUserAccount().getEmail(),  emailUtils.getSubjectIsEnabledText(), emailUtils.getBodyEnabledText());
     }
 
     public void orderAssetForInquiry(String inquiryId, AssetRequest assetRequest){
         AssetInquiry assetInquiry = find(inquiryId);
-        assetService.create(assetRequest);
+        assetService.create(assetRequest, false);
 
-        assetInquiry.setEnable(true);
+        assetInquiry.setEnable(false);
         assetInquiry.setStatus(DONE);
         save(assetInquiry);
 
@@ -148,5 +148,9 @@ public class AssetInquiryService {
 
     public void delete(AssetInquiry assetInquiry) {
         assetInquiryRepository.delete(assetInquiry);
+    }
+
+    public AssetInquiryDto getById(String id) {
+        return AssetInquiryMapper.INSTANCE.mapEntityToAssetInquiryDto(find(id));
     }
 }

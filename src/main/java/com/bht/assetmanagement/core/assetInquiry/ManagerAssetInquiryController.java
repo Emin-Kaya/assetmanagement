@@ -23,17 +23,23 @@ public class ManagerAssetInquiryController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
+    public AssetInquiryDto getById(@PathVariable String id) {
+        return assetInquiryService.getById(id);
+    }
+
+    @GetMapping("/confirm/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public AssetInquiryResponse getAvailableAssetsForAssetInquiry(@PathVariable String id) {
         return assetInquiryService.availableAssetsForInquiry(id);
     }
 
-    @PutMapping("/confirm/{id}")
+    @PutMapping("/confirm/existing/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void confirmAssetInquriy(@PathVariable String id, @RequestParam String assetId) {
         assetInquiryService.confirmAssetInquriy(id, assetId);
     }
 
-    @PutMapping("/confirm/order/{assetInquiryId}") //TODO URL Ändern zuerst id dann funktion
+    @PutMapping("/confirm/order/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void orderAssetForInquiry(@PathVariable String id, @RequestBody AssetRequest assetRequest) {
         assetInquiryService.orderAssetForInquiry(id, assetRequest);

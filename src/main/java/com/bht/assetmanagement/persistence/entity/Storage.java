@@ -24,6 +24,9 @@ public class Storage {
 
     private String name;
 
+    @Column
+    private boolean isArchived = false;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Asset> assets = new ArrayList<>();
 }

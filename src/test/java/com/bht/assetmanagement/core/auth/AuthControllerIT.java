@@ -4,7 +4,6 @@ import com.bht.assetmanagement.IntegrationTestSetup;
 import com.bht.assetmanagement.core.refreshToken.RefreshTokenService;
 import com.bht.assetmanagement.core.verificationToken.VerificationTokenService;
 import com.bht.assetmanagement.persistence.dto.*;
-import com.bht.assetmanagement.persistence.entity.ApplicationUser;
 import com.bht.assetmanagement.persistence.entity.UserAccount;
 import com.bht.assetmanagement.persistence.repository.RefreshTokenRepository;
 import com.bht.assetmanagement.persistence.repository.UserAccountRepository;
@@ -33,6 +32,7 @@ public class AuthControllerIT extends IntegrationTestSetup {
 
     @Autowired
     private RefreshTokenService refreshTokenService;
+
 
 
     @BeforeEach
@@ -65,7 +65,7 @@ public class AuthControllerIT extends IntegrationTestSetup {
         String token = verificationTokenService.generateVerificationToken(userAccount);
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .get("/auth/activate/account/{token}", token))
+                        .get("/api/v1/auth/activate/account/{token}", token))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isOk());
@@ -77,7 +77,7 @@ public class AuthControllerIT extends IntegrationTestSetup {
         UserAccount userAccount = testDataBuilder.aValidEmployeeUserAccount();
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post("/auth/signin")
+                        .post("/api/v1/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getRequestBody(testDataBuilder.aValidEmployeeloginRequest())))
                 .andExpect(MockMvcResultMatchers
@@ -92,7 +92,7 @@ public class AuthControllerIT extends IntegrationTestSetup {
         loginRequest.setPassword("invalidPassword");
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post("/auth/signin")
+                        .post("/api/v1/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getRequestBody(loginRequest)))
                 .andExpect(MockMvcResultMatchers
@@ -103,11 +103,13 @@ public class AuthControllerIT extends IntegrationTestSetup {
     @Test
     void signOutTest() throws Exception {
         UserAccount userAccount = testDataBuilder.aValidEmployeeUserAccount();
-        AuthenticationResponse authenticationResponse = authService.signIn(testDataBuilder.aValidEmployeeloginRequest());
-        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest(authenticationResponse.getRefreshToken(), authenticationResponse.getRole());
+        LoginRequest loginRequest = testDataBuilder.aValidEmployeeloginRequest();
+
+        AuthenticationResponse authenticationResponse = authService.signIn(loginRequest);
+        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest(authenticationResponse.getRefreshToken(), userAccount.getUsername());
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post("/auth/signout")
+                        .post("/api/v1/auth/signout")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getRequestBody(refreshTokenRequest)))
                 .andExpect(MockMvcResultMatchers
@@ -116,13 +118,15 @@ public class AuthControllerIT extends IntegrationTestSetup {
     }
 
     @Test
-    void canNotsignOutTest() throws Exception {
+    void canNotSignOutTest() throws Exception {
         UserAccount userAccount = testDataBuilder.aValidEmployeeUserAccount();
-        AuthenticationResponse authenticationResponse = authService.signIn(testDataBuilder.aValidEmployeeloginRequest());
-        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest("invalidRefreshtoken", authenticationResponse.getRole());
+        LoginRequest loginRequest = testDataBuilder.aValidEmployeeloginRequest();
+
+        AuthenticationResponse authenticationResponse = authService.signIn(loginRequest);
+        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest("invalidRefreshtoken", userAccount.getUsername());
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post("/auth/signout")
+                        .post("/api/v1/auth/signout")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getRequestBody(refreshTokenRequest)))
                 .andExpect(MockMvcResultMatchers
@@ -132,16 +136,16 @@ public class AuthControllerIT extends IntegrationTestSetup {
 
     @Test
     void changeUserPasswordTest() throws Exception {
-        ApplicationUser applicationUser = testDataBuilder.aValidEmployeeApplicationUser();
-        refreshTokenService.generateRefreshToken(applicationUser.getUserAccount().getUsername());
+        UserAccount userAccount = testDataBuilder.aValidEmployeeUserAccount();
+        refreshTokenService.generateRefreshToken(userAccount.getUsername());
 
         PasswordChangeRequest passwordChangeRequest = new PasswordChangeRequest("12345678", "newPassword");
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .put("/auth/change/password")
+                        .put("/api/v1/auth/change/password")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getRequestBody(passwordChangeRequest))
-                        .with(getAuthentication(applicationUser)))
+                        .with(getAuthentication(userAccount.getApplicationUser())))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isOk());
@@ -149,15 +153,15 @@ public class AuthControllerIT extends IntegrationTestSetup {
 
     @Test
     void canNotchangeUserPasswordTest() throws Exception {
-        ApplicationUser applicationUser = testDataBuilder.aValidEmployeeApplicationUser();
-        refreshTokenService.generateRefreshToken(applicationUser.getUserAccount().getUsername());
+        UserAccount userAccount = testDataBuilder.aValidEmployeeUserAccount();
+        refreshTokenService.generateRefreshToken(userAccount.getUsername());
         PasswordChangeRequest passwordChangeRequest = new PasswordChangeRequest("invalidPassword", "newPassword");
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .put("/auth/change/password")
+                        .put("/api/v1/auth/change/password")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getRequestBody(passwordChangeRequest))
-                        .with(getAuthentication(applicationUser)))
+                        .with(getAuthentication(userAccount.getApplicationUser())))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isNotFound());
@@ -165,14 +169,14 @@ public class AuthControllerIT extends IntegrationTestSetup {
 
     @Test
     void changeUserEmailTest() throws Exception {
-        ApplicationUser applicationUser = testDataBuilder.aValidEmployeeApplicationUser();
-        EmailChangeRequest emailChangeRequest = new EmailChangeRequest(applicationUser.getUserAccount().getEmail(), "newEmail@mail.de");
+        UserAccount userAccount = testDataBuilder.aValidEmployeeUserAccount();
+        EmailChangeRequest emailChangeRequest = new EmailChangeRequest(userAccount.getEmail(), "newEmail@mail.de");
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .put("/auth/change/email")
+                        .put("/api/v1/auth/change/email")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getRequestBody(emailChangeRequest))
-                        .with(getAuthentication(applicationUser)))
+                        .with(getAuthentication(userAccount.getApplicationUser())))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isOk());
@@ -180,18 +184,16 @@ public class AuthControllerIT extends IntegrationTestSetup {
 
     @Test
     void canNotchangeUserEmailTest() throws Exception {
-        ApplicationUser applicationUser = testDataBuilder.aValidEmployeeApplicationUser();
+        UserAccount userAccount = testDataBuilder.aValidEmployeeUserAccount();
         EmailChangeRequest emailChangeRequest = new EmailChangeRequest("invalidOldEmail", "newEmail@mail.de");
 
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .put("/auth/change/password")
+                        .put("/api/v1/auth/change/password")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getRequestBody(emailChangeRequest))
-                        .with(getAuthentication(applicationUser)))
+                        .with(getAuthentication(userAccount.getApplicationUser())))
                 .andExpect(MockMvcResultMatchers
                         .status()
                         .isBadRequest());
     }
-
-
 }

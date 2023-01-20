@@ -1,5 +1,6 @@
 package com.bht.assetmanagement.config.security;
 
+import com.bht.assetmanagement.persistence.entity.UserAccount;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Getter;
@@ -24,6 +25,9 @@ public class JwtUtils {
     private String jwtSecret;
     @Value("${app.jwtExpirationMs}")
     private int jwtExpirationMs;
+
+    @Value("${app.jwtRtExpirationMs}")
+    private int jwtRtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -52,5 +56,16 @@ public class JwtUtils {
             return bearerToken.substring(7);
         }
         return bearerToken;
+    }
+
+    public String generateJwtTokenByRefresh(UserAccount userAccount) {
+       return Jwts.builder()
+                .setSubject(userAccount.getUsername())
+                .setIssuedAt(new Date())
+                .setIssuer("asset-management")
+                .setExpiration(new Date((new Date()).getTime() + jwtRtExpirationMs))
+                .claim("role", userAccount.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                .signWith(SignatureAlgorithm.HS256, jwtSecret)
+                .compact();
     }
 }

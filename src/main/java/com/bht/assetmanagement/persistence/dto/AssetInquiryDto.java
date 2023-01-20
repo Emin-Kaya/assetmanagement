@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 public class AssetInquiryDto {
     private String id;
     private String note;
-    private Double price;
     private String link;
     private boolean enable;
     private Status status;
@@ -21,5 +20,6 @@ public class AssetInquiryDto {
     private AddressDto address;
     private String assetName;
     private String assetCategory;
+    private String memory;
 }
 

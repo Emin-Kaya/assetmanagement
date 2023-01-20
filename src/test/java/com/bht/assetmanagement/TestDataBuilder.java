@@ -60,14 +60,30 @@ public class TestDataBuilder {
 
     public UserAccount aValidUserAccount(String role) {
         UserAccount userAccount = new UserAccount();
-        userAccount.setId(UUID.randomUUID());
         userAccount.setUsername("validUsername");
         userAccount.setEmail("validEmail@mail.de");
         userAccount.setPassword("12345678");
         userAccount.setEnabled(true);
         userAccount.setRole(Role.valueOf(role));
 
-        return userAccountRepository.save(userAccount);
+        userAccountRepository.save(userAccount);
+
+        userAccount.setApplicationUser(aValidApplicationUser(userAccount));
+
+        userAccountRepository.save(userAccount);
+
+        return userAccount;
+    }
+
+
+    public ApplicationUser aValidApplicationUser(UserAccount userAccount) {
+        ApplicationUser applicationUser = new ApplicationUser();
+        applicationUser.setFirstName("Firstname");
+        applicationUser.setLastName("Lastname");
+        applicationUser.setEmployeeId("EmployeID");
+        applicationUser.setUserAccount(userAccount);
+
+        return applicationUserRepository.save(applicationUser);
     }
 
     public UserAccountRequest aValidUserAccountRequest() {
@@ -76,8 +92,47 @@ public class TestDataBuilder {
                 .username("aValidUsername")
                 .password("aValidPassword")
                 .role(Role.MANAGER)
+                .applicationUserRequest(aValidApplicationRequest())
                 .build();
     }
+
+    public UserAccount aValidEmployeeUserAccount() {
+        UserAccount userAccount = new UserAccount();
+        userAccount.setUsername("validEmployeeUsername");
+        userAccount.setEmail("validEmployeeEmail@mail.de");
+        userAccount.setPassword(passwordEncoder.encode("12345678"));
+        userAccount.setEnabled(true);
+        userAccount.setRole(Role.EMPLOYEE);
+
+        userAccountRepository.save(userAccount);
+
+        userAccount.setApplicationUser(aValidEmployeeApplicationUser(userAccount));
+
+        userAccountRepository.save(userAccount);
+
+        return userAccount;
+    }
+
+    public ApplicationUser aValidEmployeeApplicationUser(UserAccount userAccount) {
+        ApplicationUser applicationUser = new ApplicationUser();
+        applicationUser.setFirstName("Lena");
+        applicationUser.setLastName("Malz");
+        applicationUser.setEmployeeId("MA-2121");
+        applicationUser.setUserAccount(userAccount);
+
+        return applicationUserRepository.save(applicationUser);
+    }
+
+    public LoginRequest aValidEmployeeloginRequest() {
+        return LoginRequest.builder()
+                .username("validEmployeeUsername")
+                .password("12345678")
+                .build();
+    }
+
+
+
+
 
 
     public UserAccount aValidAdminUserAccount() {
@@ -124,34 +179,7 @@ public class TestDataBuilder {
         return applicationUserRepository.save(applicationUser);
     }
 
-    public UserAccount aValidEmployeeUserAccount() {
-        UserAccount userAccount = new UserAccount();
-        userAccount.setId(UUID.randomUUID());
-        userAccount.setUsername("lenamalz");
-        userAccount.setEmail("lenamalz@mail.de");
-        userAccount.setPassword(passwordEncoder.encode("12345678"));
-        userAccount.setEnabled(true);
-        userAccount.setRole(Role.EMPLOYEE);
 
-        return userAccountRepository.save(userAccount);
-    }
-
-    public ApplicationUser aValidEmployeeApplicationUser() {
-        ApplicationUser applicationUser = new ApplicationUser();
-        applicationUser.setFirstName("Lena");
-        applicationUser.setLastName("Malz");
-        applicationUser.setEmployeeId("MA-2121");
-        applicationUser.setUserAccount(aValidEmployeeUserAccount());
-
-        return applicationUserRepository.save(applicationUser);
-    }
-
-    public LoginRequest aValidEmployeeloginRequest() {
-        return LoginRequest.builder()
-                .username("lenamalz")
-                .password("12345678")
-                .build();
-    }
 
     public ApplicationUserRequest aValidApplicationRequest() {
         return new ApplicationUserRequest("MA-2112", "Test", "Tester");
@@ -171,6 +199,7 @@ public class TestDataBuilder {
 
     public Asset aValidAsset() {
         Asset asset = new Asset();
+        asset.setSerialnumber("123456789");
         asset.setName("iPhone 13");
         asset.setCategory("Telefon");
         return assetRepository.save(asset);
@@ -178,13 +207,12 @@ public class TestDataBuilder {
 
     public AssetRequest aValidAssetRequest() {
         String storageId = aValidStorage().getId().toString();
-        return new AssetRequest("iPhone 12", "Telefon", storageId, "", "");
+        return new AssetRequest("123456","iPhone 12", "Telefon", "keine Notizen", "64 GB", storageId);
     }
 
     public AssetInquiryRequest aValidAssetInquiryRequest() {
         return AssetInquiryRequest.builder()
                 .note("notes")
-                .price(10.0)
                 .link("www.testlink.de")
                 .addressRequest(aAddressRequest())
                 .assetName("testAsset")
@@ -193,14 +221,14 @@ public class TestDataBuilder {
     }
 
     public AssetInquiry aValidAssetInquiry() {
+        UserAccount userAccount = aValidEmployeeUserAccount();
         AssetInquiry assetInquiry = new AssetInquiry();
         assetInquiry.setEntryDate("09.07.2022");
         assetInquiry.setNote("aNote");
-        assetInquiry.setPrice(10.0);
         assetInquiry.setLink("www.aLink.de");
         assetInquiry.setEnable(false);
         assetInquiry.setStatus(Status.NOT_DONE);
-        assetInquiry.setOwner(aValidEmployeeApplicationUser());
+        assetInquiry.setOwner(userAccount.getApplicationUser());
         assetInquiry.setAddress(aAddress());
         assetInquiry.setAssetName("iPhone 13");
         assetInquiry.setAssetCategory("Telefon");
