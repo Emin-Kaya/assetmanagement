@@ -77,6 +77,8 @@ public class TestDataService {
         asset.setName("iPhone 11 Pro");
         asset.setCategory("Telefon");
         asset.setSerialnumber("12dfd36456");
+        asset.setMemory("256GB");
+        asset.setNotes("Schwarz");
         asset.setEnable(true);
         assetRepository.save(asset);
 
@@ -85,6 +87,8 @@ public class TestDataService {
         asset1.setCategory("Telefon");
         asset1.setSerialnumber("1236gdf456w");
         asset1.setEnable(true);
+        asset1.setMemory("256GB");
+        asset1.setNotes("Schwarz");
         assetRepository.save(asset1);
 
         Asset asset2 = new Asset();
@@ -92,6 +96,8 @@ public class TestDataService {
         asset2.setCategory("Telefon");
         asset2.setSerialnumber("12364fdgf56s");
         asset2.setEnable(true);
+        asset2.setMemory("256GB");
+        asset2.setNotes("Weiß");
         assetRepository.save(asset2);
 
         Asset asset3 = new Asset();
@@ -99,7 +105,8 @@ public class TestDataService {
         asset3.setCategory("Tablet");
         asset3.setSerialnumber("123gf6456s");
         asset3.setEnable(true);
-
+        asset3.setMemory("128GB");
+        asset3.setNotes("Weiß");
         assetRepository.save(asset3);
 
         Asset asset4 = new Asset();
@@ -107,6 +114,8 @@ public class TestDataService {
         asset4.setCategory("Laptop");
         asset4.setSerialnumber("ddfgsdsddg25");
         asset4.setEnable(true);
+        asset4.setMemory("512GB");
+        asset4.setNotes("16 Zoll");
         assetRepository.save(asset4);
 
         Asset asset5 = new Asset();
@@ -114,6 +123,8 @@ public class TestDataService {
         asset5.setCategory("Zubehör");
         asset5.setSerialnumber("1213536sd456s");
         asset5.setEnable(true);
+        asset5.setMemory("Keine Infos");
+        asset5.setNotes("Keine Infos");
         assetRepository.save(asset5);
 
         Asset asset6 = new Asset();
@@ -121,6 +132,8 @@ public class TestDataService {
         asset6.setCategory("Lizensen");
         asset6.setSerialnumber("1s2345679");
         asset6.setEnable(true);
+        asset6.setMemory("Keine Infos");
+        asset6.setNotes("Keine Infos");
         assetRepository.save(asset6);
 
 
@@ -129,6 +142,8 @@ public class TestDataService {
         asset8.setCategory("Telefon");
         asset8.setSerialnumber("1236gdhggasf456w");
         asset8.setEnable(true);
+        asset8.setMemory("Keine Infos");
+        asset8.setNotes("Keine Infos");
         assetRepository.save(asset8);
 
 
@@ -274,80 +289,10 @@ public class TestDataService {
         applicationUser7.setUserAccount(userAccount7);
         applicationUserRepository.save(applicationUser7);
 
-        /*AssetUserHistory assetUserHistory1 = new AssetUserHistory();
-        assetUserHistory1.setAsset(asset);
-        assetUserHistory1.setLendStatus(LendStatus.RENTED);
-        assetUserHistory1.setRendDate(dateUtils.createLocalDate());
-        assetUserHistory1.setApplicationUser(applicationUser1);
-        assetUserHistoryRepository.save(assetUserHistory1);
-
-        AssetUserHistory assetUserHistory2 = new AssetUserHistory();
-        assetUserHistory2.setAsset(asset4);
-        assetUserHistory2.setLendStatus(LendStatus.RENTED);
-        assetUserHistory2.setRendDate(dateUtils.createLocalDate());
-        assetUserHistory2.setApplicationUser(applicationUser1);
-        assetUserHistoryRepository.save(assetUserHistory2);
-
-        AssetUserHistory assetUserHistory3 = new AssetUserHistory();
-        assetUserHistory3.setAsset(asset);
-        assetUserHistory3.setLendStatus(LendStatus.RENTED);
-        assetUserHistory3.setRendDate(dateUtils.createLocalDate());
-        assetUserHistory3.setApplicationUser(applicationUser2);
-        assetUserHistoryRepository.save(assetUserHistory3);
-
-        AssetUserHistory assetUserHistory4 = new AssetUserHistory();
-        assetUserHistory4.setAsset(asset4);
-        assetUserHistory4.setLendStatus(LendStatus.RENTED);
-        assetUserHistory4.setRendDate(dateUtils.createLocalDate());
-        assetUserHistory4.setApplicationUser(applicationUser2);
-        assetUserHistoryRepository.save(assetUserHistory4);
-
-        AssetUserHistory assetUserHistory5 = new AssetUserHistory();
-        assetUserHistory5.setAsset(asset);
-        assetUserHistory5.setLendStatus(LendStatus.RENTED);
-        assetUserHistory5.setRendDate(dateUtils.createLocalDate());
-        assetUserHistory5.setApplicationUser(applicationUser3);
-        assetUserHistoryRepository.save(assetUserHistory5);
-
-        AssetUserHistory assetUserHistory6 = new AssetUserHistory();
-        assetUserHistory6.setAsset(asset4);
-        assetUserHistory6.setLendStatus(LendStatus.RENTED);
-        assetUserHistory6.setRendDate(dateUtils.createLocalDate());
-        assetUserHistory6.setApplicationUser(applicationUser3);
-        assetUserHistoryRepository.save(assetUserHistory6);
-
-        AssetUserHistory assetUserHistory7 = new AssetUserHistory();
-        assetUserHistory7.setAsset(asset);
-        assetUserHistory7.setLendStatus(LendStatus.RENTED);
-        assetUserHistory7.setRendDate(dateUtils.createLocalDate());
-        assetUserHistory7.setApplicationUser(applicationUser4);
-        assetUserHistoryRepository.save(assetUserHistory7);
-
-        AssetUserHistory assetUserHistory8 = new AssetUserHistory();
-        assetUserHistory8.setAsset(asset4);
-        assetUserHistory8.setLendStatus(LendStatus.RENTED);
-        assetUserHistory8.setRendDate(dateUtils.createLocalDate());
-        assetUserHistory8.setApplicationUser(applicationUser4);
-        assetUserHistoryRepository.save(assetUserHistory8);
-
-        AssetUserHistory assetUserHistory9 = new AssetUserHistory();
-        assetUserHistory9.setAsset(asset);
-        assetUserHistory9.setLendStatus(LendStatus.RENTED);
-        assetUserHistory9.setRendDate(dateUtils.createLocalDate());
-        assetUserHistory9.setApplicationUser(applicationUser5);
-        assetUserHistoryRepository.save(assetUserHistory9);
-
-        AssetUserHistory assetUserHistory10 = new AssetUserHistory();
-        assetUserHistory10.setAsset(asset4);
-        assetUserHistory10.setLendStatus(LendStatus.RENTED);
-        assetUserHistory10.setRendDate(dateUtils.createLocalDate());
-        assetUserHistory10.setApplicationUser(applicationUser5);
-        assetUserHistoryRepository.save(assetUserHistory10);*/
-
 
         AssetInquiry assetInquiry = new AssetInquiry();
         assetInquiry.setEntryDate(dateUtils.createLocalDate());
-        assetInquiry.setNote("Bitte die 256GB Variante");
+        assetInquiry.setNote("Bitte die 512GB Variante");
         assetInquiry.setLink("www.apple.com");
         assetInquiry.setEnable(false);
         assetInquiry.setStatus(Status.NOT_DONE);
@@ -383,7 +328,7 @@ public class TestDataService {
 
         AssetInquiry assetInquiry3 = new AssetInquiry();
         assetInquiry3.setEntryDate(dateUtils.createLocalDate());
-        assetInquiry3.setNote("Bitte die 64GB Variante");
+        assetInquiry3.setNote("Bitte die 256GB Variante");
         assetInquiry3.setLink("www.apple.com");
         assetInquiry3.setEnable(false);
         assetInquiry3.setStatus(Status.NOT_DONE);
